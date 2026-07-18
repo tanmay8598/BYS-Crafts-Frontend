@@ -1,7 +1,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import useAuth from "@/auth/useAuth";
 import apiClient from "@/api/client";
 import toast from "react-hot-toast";
@@ -13,6 +13,7 @@ export default function WishlistAccountSection() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  console.log("user", user)
 
   useEffect(() => {
     if (!user?.id) {

@@ -20,7 +20,7 @@ const page = () => {
   const selector = useSelector((state) => state.cart);
   const router = useRouter();
   const [Razorpay] = useRazorpay();
-  
+
   const [shippingAddress, setShippingAddress] = useState(null);
   const [isOpenAccount, setIsOpenAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,11 +32,11 @@ const page = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("online");
   const [paymentStatus, setPaymentStatus] = useState(false);
   const [errors, setErrors] = useState({});
-const [addresses, setAddresses] = useState([]);
-const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const [formData, setFormData] = useState({
-    addressType: "home", 
+    addressType: "home",
     address: "",
     city: "",
     street: "",
@@ -51,7 +51,7 @@ const [selectedAddress, setSelectedAddress] = useState(null);
   // console.log("user", user)
 
   const schema = Yup.object().shape({
-      addressType: Yup.string(),
+    addressType: Yup.string(),
     address: Yup.string().required("Address is required"),
     city: Yup.string().required("City is required"),
     street: Yup.string().required("Street is required"),
@@ -106,14 +106,10 @@ const [selectedAddress, setSelectedAddress] = useState(null);
     }
   };
 
-  
-
   useEffect(() => {
     getCoupons();
     getUserDetails();
     setIsLoading(false);
-
-
   }, [user]);
 
   useEffect(() => {
@@ -142,14 +138,16 @@ const [selectedAddress, setSelectedAddress] = useState(null);
 
   const handleApplyCoupons = () => {
     const coupon = coupans.find((c) => c.name === couponCode);
-    
+
     if (!coupon) {
       toast.error("Invalid coupon code");
       return;
     }
 
-    const isUsedByUser = coupon?.usedBy?.filter((User) => User._id === user?.id);
-    
+    const isUsedByUser = coupon?.usedBy?.filter(
+      (User) => User._id === user?.id,
+    );
+
     if (isUsedByUser?.length > 0) {
       toast.error("Coupon already used by the user");
       return;
@@ -157,7 +155,7 @@ const [selectedAddress, setSelectedAddress] = useState(null);
 
     const discountVal = Math.min(
       (totalValue * coupon.discount) / 100,
-      coupon.max
+      coupon.max,
     );
 
     if (discountVal >= totalValue) {
@@ -179,73 +177,72 @@ const [selectedAddress, setSelectedAddress] = useState(null);
     toast.success("Coupon removed");
   };
 
-
-  
-
-const getUserDetails = async () => {
-  try {
-    const res = await apiClient.get("/user/get-profile", {
-      id: user?.id
-    })
-
-    
-    setAddresses(res.data.shippingAddress || []);
-    
-    if (res.data.shippingAddress && res.data.shippingAddress.length > 0 && !selectedAddress) {
-      setSelectedAddress(res.data.shippingAddress[0]);
-    }
-  } catch (error) {
-    console.log("error", error)
-  }
-}
-
-
-const handleSaveAddress = async () => {
-  const { isValid, errors } = await validate();
-
-  if (!isValid) {
-    const firstError = Object.values(errors)[0];
-    toast.error(firstError || "Please fix form errors");
-    return;
-  }
-
-  try {
-    const response = await apiClient.post("/user/add-address", {
-      userId: user.id,
-      shippingAddress: formData,
-    });
-
-
-    if (response.ok) {
-      if (response.data.token) {
-     
-      }
-      
-      await getUserDetails();
-      
-      setFormData({
-        addressType: "home",
-        address: "",
-        city: "",
-        street: "",
-        email: user?.email || "",
-        mobileNumber: "",
-        area: "",
-        pincode: "",
-        landmark: "",
-        state: "",
+  const getUserDetails = async () => {
+    console.log("payload", user?.id);
+    try {
+      const res = await apiClient.get("/user/get-profile", {
+        id: user?.id,
       });
-      
-      toast.success("Address saved successfully!");
-      
-    } else {
-      toast.error(response.data?.message || "Failed to save address");
+
+      console.log("res", res)
+
+      setAddresses(res.data.shippingAddress || []);
+
+      if (
+        res.data.shippingAddress &&
+        res.data.shippingAddress.length > 0 &&
+        !selectedAddress
+      ) {
+        setSelectedAddress(res.data.shippingAddress[0]);
+      }
+    } catch (error) {
+      console.log("error", error);
     }
-  } catch (error) {
-    console.error("Error saving address:", error);
-    toast.error(error.response?.data?.message || "Failed to save address");
-  }
-};
+  };
+
+  const handleSaveAddress = async () => {
+    const { isValid, errors } = await validate();
+
+    if (!isValid) {
+      const firstError = Object.values(errors)[0];
+      toast.error(firstError || "Please fix form errors");
+      return;
+    }
+
+    try {
+      const response = await apiClient.post("/user/add-address", {
+        userId: user.id,
+        shippingAddress: formData,
+      });
+
+      if (response.ok) {
+        if (response.data.token) {
+        }
+
+        await getUserDetails();
+
+        setFormData({
+          addressType: "home",
+          address: "",
+          city: "",
+          street: "",
+          email: user?.email || "",
+          mobileNumber: "",
+          area: "",
+          pincode: "",
+          landmark: "",
+          state: "",
+        });
+
+        toast.success("Address saved successfully!");
+      } else {
+        toast.error(response.data?.message || "Failed to save address");
+      }
+    } catch (error) {
+      console.error("Error saving address:", error);
+      toast.error(error.response?.data?.message || "Failed to save address");
+    }
+  };
 
   const handleRazorpayPayment = useCallback(async () => {
     try {
@@ -279,17 +276,17 @@ const handleSaveAddress = async () => {
         },
         prefill: {
           email: user?.email,
-         contact: selectedAddress?.mobileNumber || user?.phone,
+          contact: selectedAddress?.mobileNumber || user?.phone,
           name: user?.name,
         },
         theme: {
           color: "#1f3b57",
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             toast.error("Payment cancelled");
-          }
-        }
+          },
+        },
       };
 
       const rzpay = new Razorpay(options);
@@ -313,19 +310,11 @@ const handleSaveAddress = async () => {
 
       console.log("Pay....", {
         orderItems,
-       shippingAddress: selectedAddress || formData,
-        paymentMethod: selectedPaymentMethod === "online" ? "Online Payment" : "Cash on Delivery",
-        itemsPrice: totalValue,
-        totalPrice: discountedTotal,
-        deliveryStatus: "Processing",
-        userId: user.id,
-        isPaid: selectedPaymentMethod === "online",
-      })
-
-      const orderResult = await apiClient.post("/orders/create-order", {
-        orderItems,
-        shippingAddress: shippingAddress || formData,
-        paymentMethod: selectedPaymentMethod === "online" ? "Online Payment" : "Cash on Delivery",
+        shippingAddress: selectedAddress || formData,
+        paymentMethod:
+          selectedPaymentMethod === "online"
+            ? "Online Payment"
+            : "Cash on Delivery",
         itemsPrice: totalValue,
         totalPrice: discountedTotal,
         deliveryStatus: "Processing",
@@ -333,9 +322,21 @@ const handleSaveAddress = async () => {
         isPaid: selectedPaymentMethod === "online",
       });
 
-      // console.log("orderResult", orderResult)
+      const orderResult = await apiClient.post("/orders/create-order", {
+        orderItems,
+        shippingAddress: shippingAddress || formData,
+        paymentMethod:
+          selectedPaymentMethod === "online"
+            ? "Online Payment"
+            : "Cash on Delivery",
+        itemsPrice: totalValue,
+        totalPrice: discountedTotal,
+        deliveryStatus: "Processing",
+        userId: user.id,
+        isPaid: selectedPaymentMethod === "online",
+      });
 
-
+      console.log("orderResult", orderResult)
 
       if (!orderResult.ok) {
         throw new Error("Error creating order");
@@ -362,7 +363,7 @@ const handleSaveAddress = async () => {
 
   const handlePlaceOrder = async () => {
     // Validate shipping address
-    const addressToUse = selectedAddress  || formData;
+    const addressToUse = selectedAddress || formData;
     if (!addressToUse.address || !addressToUse.city || !addressToUse.pincode) {
       toast.error("Please add a complete shipping address");
       return;
@@ -389,7 +390,6 @@ const handleSaveAddress = async () => {
     <>
       <div className="bg-[#FAF6ED] min-h-screen py-8">
         <div className="max-w-[1200px] mx-auto px-4">
-
           <div className="flex items-center justify-center mb-10">
             {["Cart", "Shipping", "Payment", "Confirm"].map((step, i) => {
               const isCompleted = i === 0;
@@ -403,8 +403,8 @@ const handleSaveAddress = async () => {
                       isCompleted
                         ? "bg-[#2e7d5b] text-white"
                         : isActive
-                        ? "bg-[#1f3b57] text-white"
-                        : "bg-[#e6dfd2] text-[#9c9486]"
+                          ? "bg-[#1f3b57] text-white"
+                          : "bg-[#e6dfd2] text-[#9c9486]"
                     }`}
                   >
                     {isCompleted ? "✓" : i + 1}
@@ -460,7 +460,9 @@ const handleSaveAddress = async () => {
                       placeholder="Phone number"
                     />
                     {errors.mobileNumber && (
-                      <p className="text-red-500 text-xs mt-1">{errors.mobileNumber}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.mobileNumber}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -473,109 +475,122 @@ const handleSaveAddress = async () => {
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  
+                  {addresses.map((addr, index) => {
+                    const isSelected = selectedAddress?._id === addr._id;
 
-
-
-{addresses.map((addr, index) => {
-  const isSelected = selectedAddress?._id === addr._id;
-  
-  return (
-    <div
-      key={addr._id || index}
-      onClick={() => {
-        setSelectedAddress(addr);
-        setFormData({
-          addressType: addr.addressType || "home",
-          address: addr.address || "",
-          city: addr.city || "",
-          street: addr.street || "",
-          email: addr.email || user?.email || "",
-          mobileNumber: addr.mobileNumber || "",
-          area: addr.area || "",
-          pincode: addr.pincode || "",
-          landmark: addr.landmark || "",
-          state: addr.state || "",
-        });
-      }}
-      className={`p-4 rounded-xl border cursor-pointer transition relative
+                    return (
+                      <div
+                        key={addr._id || index}
+                        onClick={() => {
+                          setSelectedAddress(addr);
+                          setFormData({
+                            addressType: addr.addressType || "home",
+                            address: addr.address || "",
+                            city: addr.city || "",
+                            street: addr.street || "",
+                            email: addr.email || user?.email || "",
+                            mobileNumber: addr.mobileNumber || "",
+                            area: addr.area || "",
+                            pincode: addr.pincode || "",
+                            landmark: addr.landmark || "",
+                            state: addr.state || "",
+                          });
+                        }}
+                        className={`p-4 rounded-xl border cursor-pointer transition relative
         ${
           isSelected
             ? "border-[#1f3b57] bg-[#e9eef5]"
             : "border-[#e6dfd2] bg-[#f8f5ef]"
         }`}
-    >
-      <p className={`text-[11px] font-semibold mb-1 tracking-widest
-        ${addr.addressType?.toUpperCase() === "office" 
-          ? "text-[#8b6f47]" 
-          : "text-gray-600"}`}
-      >
-        {addr.addressType?.toUpperCase() || "HOME"}
-      </p>
-      
-      <p className="text-sm text-[#2c2c2c] leading-snug">
-        {addr.address}, {addr.street}
-      </p>
-      
-      <p className="text-xs text-gray-500 mt-1">
-        {addr.area}, {addr.city}, {addr.state} - {addr.pincode}
-      </p>
-      
-      {isSelected && (
-        <div className="absolute top-3 right-3 w-5 h-5 bg-[#1f3b57] text-white text-xs flex items-center justify-center rounded-full">
-          ✓
-        </div>
-      )}
-    </div>
-  );
-})}
+                      >
+                        <p
+                          className={`text-[11px] font-semibold mb-1 tracking-widest
+        ${
+          addr.addressType?.toUpperCase() === "office"
+            ? "text-[#8b6f47]"
+            : "text-gray-600"
+        }`}
+                        >
+                          {addr.addressType?.toUpperCase() || "HOME"}
+                        </p>
+
+                        <p className="text-sm text-[#2c2c2c] leading-snug">
+                          {addr.address}, {addr.street}
+                        </p>
+
+                        <p className="text-xs text-gray-500 mt-1">
+                          {addr.area}, {addr.city}, {addr.state} -{" "}
+                          {addr.pincode}
+                        </p>
+
+                        {isSelected && (
+                          <div className="absolute top-3 right-3 w-5 h-5 bg-[#1f3b57] text-white text-xs flex items-center justify-center rounded-full">
+                            ✓
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <p className="text-xs text-gray-500 text-center mt-3">
                   or add a new address
                 </p>
 
-<div className="mb-4">
-  <label className="text-xs text-gray-600 mb-2 block">Address Type</label>
-  <div className="flex gap-4">
-    <button
-      type="button"
-      onClick={() => setFormData({...formData, addressType: "home"})}
-      className={`px-4 py-2 rounded-md border text-sm ${
-        formData.addressType === "home"
-          ? "bg-[#1f3b57] text-white"
-          : "border-gray-300 bg-white"
-      }`}
-    >
-      Home
-    </button>
-    <button
-      type="button"
-      onClick={() => setFormData({...formData, addressType: "office"})}
-      className={`px-4 py-2 rounded-md border text-sm ${
-        formData.addressType === "office"
-          ? "bg-[#1f3b57] text-white"
-          : "border-gray-300 bg-white"
-      }`}
-    >
-      Office
-    </button>
-  </div>
-</div>
+                <div className="mb-4">
+                  <label className="text-xs text-gray-600 mb-2 block">
+                    Address Type
+                  </label>
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, addressType: "home" })
+                      }
+                      className={`px-4 py-2 rounded-md border text-sm ${
+                        formData.addressType === "home"
+                          ? "bg-[#1f3b57] text-white"
+                          : "border-gray-300 bg-white"
+                      }`}
+                    >
+                      Home
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, addressType: "office" })
+                      }
+                      className={`px-4 py-2 rounded-md border text-sm ${
+                        formData.addressType === "office"
+                          ? "bg-[#1f3b57] text-white"
+                          : "border-gray-300 bg-white"
+                      }`}
+                    >
+                      Office
+                    </button>
+                  </div>
+                </div>
                 <div className="grid md:grid-cols-2 gap-4 mt-6">
-
                   <div>
                     <label className="text-xs text-gray-600">First name</label>
-                    <input className="w-full mt-1 px-4 py-3 rounded-lg bg-[#efe7d7] text-sm outline-none" placeholder="First name" />
+                    <input
+                      className="w-full mt-1 px-4 py-3 rounded-lg bg-[#efe7d7] text-sm outline-none"
+                      placeholder="First name"
+                    />
                   </div>
 
                   <div>
                     <label className="text-xs text-gray-600">Last name</label>
-                    <input className="w-full mt-1 px-4 py-3 rounded-lg bg-[#efe7d7] text-sm outline-none" placeholder="Last name" />
+                    <input
+                      className="w-full mt-1 px-4 py-3 rounded-lg bg-[#efe7d7] text-sm outline-none"
+                      placeholder="Last name"
+                    />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="text-xs text-gray-600">Address line 1</label>
+                    <label className="text-xs text-gray-600">
+                      Address line 1
+                    </label>
                     <input
                       name="address"
                       value={formData.address}
@@ -584,7 +599,9 @@ const handleSaveAddress = async () => {
                       placeholder="House no., building name"
                     />
                     {errors.address && (
-                      <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.address}
+                      </p>
                     )}
                   </div>
 
@@ -600,7 +617,7 @@ const handleSaveAddress = async () => {
                       placeholder="Street"
                     />
                   </div>
-                  
+
                   <div className="md:col-span-2">
                     <label className="text-xs text-gray-600">Area</label>
                     <input
@@ -614,7 +631,7 @@ const handleSaveAddress = async () => {
                       <p className="text-red-500 text-xs mt-1">{errors.area}</p>
                     )}
                   </div>
-                  
+
                   <div className="md:col-span-2">
                     <label className="text-xs text-gray-600">Landmark</label>
                     <input
@@ -653,7 +670,9 @@ const handleSaveAddress = async () => {
                       <option value="Delhi">Delhi</option>
                     </select>
                     {errors.state && (
-                      <p className="text-red-500 text-xs mt-1">{errors.state}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.state}
+                      </p>
                     )}
                   </div>
 
@@ -667,7 +686,9 @@ const handleSaveAddress = async () => {
                       placeholder="6-digit PIN"
                     />
                     {errors.pincode && (
-                      <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.pincode}
+                      </p>
                     )}
                   </div>
 
@@ -717,10 +738,10 @@ const handleSaveAddress = async () => {
                 </h2>
 
                 <div className="space-y-3 text-xs">
-                  <div 
+                  <div
                     className={`border rounded-lg p-4 cursor-pointer transition ${
-                      selectedPaymentMethod === "online" 
-                        ? "border-[#1f3b57] bg-[#eef2f7]" 
+                      selectedPaymentMethod === "online"
+                        ? "border-[#1f3b57] bg-[#eef2f7]"
                         : "border-[#d4cfc4]"
                     }`}
                     onClick={() => setSelectedPaymentMethod("online")}
@@ -732,15 +753,19 @@ const handleSaveAddress = async () => {
                         onChange={() => setSelectedPaymentMethod("online")}
                         className="w-4 h-4"
                       />
-                      <label className="cursor-pointer">UPI / Google Pay / PhonePe / Cards / Net Banking</label>
+                      <label className="cursor-pointer">
+                        UPI / Google Pay / PhonePe / Cards / Net Banking
+                      </label>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 ml-7">Pay securely online via Razorpay</p>
+                    <p className="text-xs text-gray-500 mt-1 ml-7">
+                      Pay securely online via Razorpay
+                    </p>
                   </div>
 
-                  <div 
+                  <div
                     className={`border rounded-lg p-4 cursor-pointer transition ${
-                      selectedPaymentMethod === "cod" 
-                        ? "border-[#1f3b57] bg-[#eef2f7]" 
+                      selectedPaymentMethod === "cod"
+                        ? "border-[#1f3b57] bg-[#eef2f7]"
                         : "border-[#d4cfc4]"
                     }`}
                     onClick={() => setSelectedPaymentMethod("cod")}
@@ -754,7 +779,9 @@ const handleSaveAddress = async () => {
                       />
                       <label className="cursor-pointer">Cash on Delivery</label>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 ml-7">Pay when you receive your order</p>
+                    <p className="text-xs text-gray-500 mt-1 ml-7">
+                      Pay when you receive your order
+                    </p>
                   </div>
                 </div>
               </div>
@@ -781,7 +808,7 @@ const handleSaveAddress = async () => {
                         {item.product.name}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {item?.product?.category?.name || "Product"} 
+                        {item?.product?.category?.name || "Product"}
                       </p>
                     </div>
 
@@ -816,10 +843,12 @@ const handleSaveAddress = async () => {
                     Apply
                   </button>
                 </div>
-                
+
                 {appliedCoupon && (
                   <div className="mt-2 flex justify-between items-center bg-green-50 p-2 rounded-lg">
-                    <span className="text-xs text-green-600">Coupon {appliedCoupon} applied! -₹{discount}</span>
+                    <span className="text-xs text-green-600">
+                      Coupon {appliedCoupon} applied! -₹{discount}
+                    </span>
                     <button
                       onClick={removedCoupan}
                       className="text-xs text-red-500 hover:text-red-700"
@@ -828,8 +857,6 @@ const handleSaveAddress = async () => {
                     </button>
                   </div>
                 )}
-
-                
               </div>
 
               <div className="space-y-3 text-sm">
@@ -854,7 +881,9 @@ const handleSaveAddress = async () => {
               <div className="border-t border-[#e6e0d6] my-5"></div>
 
               <div className="flex justify-between items-center mb-4">
-                <span className="text-[16px] font-semibold text-[#2c2c2c]">Total</span>
+                <span className="text-[16px] font-semibold text-[#2c2c2c]">
+                  Total
+                </span>
                 <span className="text-[18px] font-semibold text-[#2c2c2c]">
                   ₹{discountedTotal.toLocaleString()}
                 </span>
@@ -864,7 +893,9 @@ const handleSaveAddress = async () => {
                 <div className="flex items-start gap-3">
                   <input type="checkbox" className="mt-1 accent-[#d4ad3f]" />
                   <div>
-                    <p className="text-sm font-medium text-[#2c2c2c]">Gift wrapping</p>
+                    <p className="text-sm font-medium text-[#2c2c2c]">
+                      Gift wrapping
+                    </p>
                     <p className="text-xs text-gray-500">
                       Add artisan gift wrapping + handwritten note (₹99)
                     </p>
@@ -876,7 +907,7 @@ const handleSaveAddress = async () => {
                 onClick={handlePlaceOrder}
                 className="w-full bg-[#e0bb4f] hover:bg-[#d4ad3f] py-3 rounded-lg font-semibold text-sm transition text-[#2c2c2c]"
               >
-                {selectedPaymentMethod === "online" 
+                {selectedPaymentMethod === "online"
                   ? `Pay ₹${discountedTotal.toLocaleString()} online →`
                   : `Place order — ₹${discountedTotal.toLocaleString()} →`}
               </button>

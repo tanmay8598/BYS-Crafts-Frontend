@@ -17,6 +17,8 @@ import Breadcrumbs from "@/components/Breadcrumb/Breadcrumbs";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { FiShield, FiTruck, FiRotateCcw } from "react-icons/fi";
 import ReviewSection from './../../../../components/Review/ReviewSection';
+import apiClient from "@/api/client";
+import ReviewModal from './../../../../components/Review/ReviewModal';
 
 
 export default function ProductPage({ product, related }) {
@@ -26,11 +28,60 @@ export default function ProductPage({ product, related }) {
  const [open, setOpen] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
-  console.log("found prod", product)
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [ratingCounts, setRatingCounts] = useState({
+    fiveStar: 0, fourStar: 0, threeStar: 0, twoStar: 0, oneStar: 0
+  });
 
   const productPrice = product.discount
     ? product.sell_price - (product.discount * product.sell_price) / 100
     : product.sell_price;
+
+
+     // Fetch Reviews
+  const fetchReviews = useCallback(async (page = 1) => {
+    try {
+      const response = await apiClient.get("/product/get-product-reviews-by-group-id", {
+        productId: product?._id,
+        pageNumber: page,
+        pageSize: 10,
+      });
+      setReviews(response.data.reviews || []);
+      setTotalReviews(response.data.totalReviews || 0);
+      setTotalPages(response.data.pageCount || 1);
+      setCurrentPage(page);
+      
+      // Set rating counts
+      if (response.data) {
+        setRatingCounts({
+          fiveStar: response.data.fiveStarCount || 0,
+          fourStar: response.data.fourStarCount || 0,
+          threeStar: response.data.threeStarCount || 0,
+          twoStar: response.data.twoStarCount || 0,
+          oneStar: response.data.oneStarCount || 0,
+        });
+        
+        // Calculate average rating
+        const totalStars = (response.data.fiveStarCount * 5) + (response.data.fourStarCount * 4) +
+          (response.data.threeStarCount * 3) + (response.data.twoStarCount * 2) + (response.data.oneStarCount * 1);
+        const totalCount = response.data.totalReviews || 0;
+        setAverageRating(totalCount > 0 ? totalStars / totalCount : 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      setReviews([]);
+    }
+  }, [product?._id]);
+
+  // Initial fetch
+  React.useEffect(() => {
+    fetchReviews(1);
+  }, [fetchReviews]);
 
   const handleQuantity = useCallback(
     (type) => {
@@ -70,6 +121,53 @@ export default function ProductPage({ product, related }) {
       url: window.location.href,
     });
   };
+
+
+    const handleCreateReview = async (formData) => {
+    if (!user) {
+      toast.error("Please login to write a review");
+      return;
+    }
+
+    console.log("payload of review",  {
+        ...formData,
+        productId: product._id,
+        userId: user.id,
+      } )
+
+    try {
+      // const response = await apiClient.post("/product/create-product-review", {
+      //   ...formData,
+      //   productId: product._id,
+      //   userId: user.id,
+      // });
+
+      // console.log("response of review", response )
+
+      // if (response.ok) {
+      //   toast.success(response.data.message || "Review added successfully");
+      //   setIsReviewModalOpen(false);
+      //   // Refresh reviews after a short delay
+      //   setTimeout(() => {
+      //     fetchReviews(1);
+      //   }, 800);
+      // } else {
+      //   toast.error(response.data.message || "Failed to add review");
+      // }
+    } catch (error) {
+      console.error("Error creating review:", error);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const openReviewModal = () => {
+    if (!user) {
+      toast.error("Please login to write a review");
+      return;
+    }
+    setIsReviewModalOpen(true);
+  };
+
 
   return (
     <section className="bg-[#faf6ed]  min-h-screen">
@@ -268,10 +366,31 @@ export default function ProductPage({ product, related }) {
           </div>
         </div>
 
-        <ReviewSection/>
+        {/* <ReviewSection product={product}/> */}
+
+           <ReviewSection
+          reviews={reviews}
+          totalReviews={totalReviews}
+          averageRating={averageRating}
+          ratingCounts={ratingCounts}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => fetchReviews(page)}
+          onWriteReview={openReviewModal}
+          user={user}
+        />
 
       </Wrapper>
       <RelatedProducts products={related.products} />
+
+       <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        productId={product._id}
+        productName={product.name}
+        onReviewSubmit={handleCreateReview}
+        user={user}
+      />
   
     </section>
   );

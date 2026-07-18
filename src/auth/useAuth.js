@@ -6,8 +6,16 @@ const useAuth = () => {
   const { user, setUser } = useContext(AuthContext);
 
   const logIn = (authToken) => {
-    const user = jwtDecode(authToken);
-    setUser(user);
+    if (!authToken) return;
+    const decodedUser = jwtDecode(authToken);
+      console.log("Full decoded token:", decodedUser); 
+    const userData = {
+      ...decodedUser,
+       id: decodedUser.id || decodedUser._id,
+     
+    };
+    
+    setUser(userData);
     localStorage.setItem("token", authToken);
     document.cookie = `token=${authToken}; path=/; max-age=2592000`;
   };
@@ -18,7 +26,15 @@ const useAuth = () => {
     document.cookie = "token=; path=/; max-age=0";
   };
 
-  return { user, logIn, logOut };
+ 
+  const updateUser = (userData) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      ...userData
+    }));
+  };
+
+  return { user, logIn, logOut, updateUser };
 };
 
 export default useAuth;

@@ -13,7 +13,7 @@ import { IoClose, IoTrashOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 // import AccountSidebar from './AccountSidebar';
 
-export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
+export default function cartSidebar({ isOpen, onClose, onOpenAccount }) {
   const router = useRouter();
   const { user } = useAuth();
   
@@ -25,6 +25,8 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
   // Get cart from Redux
   const products = useSelector((state) => state.cart.cart);
   const cartLength = products?.length || 0;
+
+  // console.log("op", products)
 
   // Calculate prices using your existing logic
   const getPrice = (item) => {
@@ -151,9 +153,9 @@ const handleCheckout = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-           className="fixed lg:rounded-tl-4xl lg:rounded-bl-4xl right-0 top-0 h-full w-full sm:w-[400px] md:w-[450px] bg-[#F7F3EA] z-50 flex flex-col shadow-2xl"
+className="fixed right-0 top-0 h-full w-full sm:w-[400px] md:w-[450px] bg-[#F7F3EA] z-50 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl overflow-hidden"
             >
-              <div className="flex justify-between items-center p-5 rounded-tl-4xl bg-white border-b border-[#E6DECF]">
+         <div className="flex justify-between items-center p-5 bg-white border-b border-[#E6DECF] rounded-tl-4xl">
                 <h2 className="font-semibold text-xl text-[#1E2A38]">
                   Your Cart
                 </h2>
@@ -235,10 +237,10 @@ const handleCheckout = () => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed lg:rounded-tl-4xl lg:rounded-bl-4xl right-0 top-0 h-full w-full sm:w-[400px] md:w-[450px] bg-[#F7F3EA] z-50 flex flex-col shadow-2xl"
+className="fixed right-0 top-0 h-full w-full sm:w-[400px] md:w-[450px] bg-[#F7F3EA] z-50 flex flex-col shadow-2xl rounded-tl-4xl rounded-bl-4xl overflow-hidden"
           >
             {/* Header */}
-            <div className="flex justify-between items-center rounded-tl-4xl p-5 bg-white border-b border-[#E6DECF]">
+      <div className="flex justify-between items-center p-5 bg-white border-b border-[#E6DECF] rounded-tl-4xl">
               <div>
                 <h2 className="font-bold text-xl text-[#1E2A38]">Your Cart</h2>
                 <p className="text-sm text-gray-500">
@@ -382,18 +384,19 @@ const handleCheckout = () => {
 
             {/* Order Summary Footer */}
             <div className="bg-white border-t border-[#E6DECF] shadow-lg rounded-bl-4xl">
+
               {/* Estimated Total - Click to expand */}
               <div
                 onClick={() => setShowBreakdown(!showBreakdown)}
                 className="flex justify-between items-center px-5 py-4 cursor-pointer hover:bg-gray-50 transition"
               >
                 <div className="flex items-center gap-2 text-gray-700 font-medium">
-                  <FaMoneyCheck className="text-lg text-primary" />
+                  <FaMoneyCheck className="text-sm text-primary" />
                   <span>Estimated total</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-lg text-[#1E2A38]">
+                  <span className="font-semibold text-sm text-[#1E2A38]">
                     ₹{Math.round(subtotal)}
                   </span>
                   {showBreakdown ? (
@@ -422,7 +425,7 @@ const handleCheckout = () => {
 
                       <div className="flex justify-between">
                         <span>Shipping</span>
-                        <span className="text-green-600">Free</span>
+                        <span className="text-green-600">To be calculated at checkout</span>
                       </div>
 
                       {discount > 0 && (
@@ -443,7 +446,7 @@ const handleCheckout = () => {
 
                       {discount > 0 && (
                         <div className="bg-[#E9F5EC] text-green-700 text-xs rounded-md px-3 py-2 text-center">
-                          🎉 You're saving ₹{Math.round(discount)} on this order!
+                           You're saving ₹{Math.round(discount)} on this order!
                         </div>
                       )}
                     </div>
@@ -460,14 +463,11 @@ const handleCheckout = () => {
                   Proceed to checkout
                   <FiArrowRight className="text-lg transition-transform group-hover:translate-x-1" />
                 </button>
-
-                
-
               
               </div>
             </div>
           </motion.div>
-              {/* <AccountSidebar isOpen={isOpenAccount} setIsOpen={setIsOpenAccount} /> */}
+            
         </>
       )}
     </AnimatePresence>

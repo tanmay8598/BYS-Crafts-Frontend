@@ -1,40 +1,92 @@
-"use client";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 
-import BlogHero from "@/components/Blog/BlogHero";
-import Loader from "@/components/loader/Loader";
-import NewArrivals from "@/components/NewArrivals/NewArrivals";
-import { useEffect, useState } from "react";
-import BestSellingCraftHome from "./../components/BestSellers/BestSellingCraftHome";
-import Hero from "../components/Hero/Hero";
-import WhatClient from "./../components/whatClientSays/WhatClient";
-import ShopByCategory from "./../components/Home/ShopByCategory";
+// Static components (no data fetching)
+import ShopByCategory from "@/components/Home/ShopByCategory";
+import WhatClient from "@/components/whatClientSays/WhatClient";
 
+// Dynamic imports for client components that need hooks
+const Hero = dynamic(() => import("@/components/Hero/Hero"));
+const BestSellingCraftHome = dynamic(() => import("@/components/BestSellers/BestSellingCraftHome"));
+const NewArrivals = dynamic(() => import("@/components/NewArrivals/NewArrivals"));
+const BlogHero = dynamic(() => import("@/components/Blog/BlogHero"));
+
+const SERVER = process.env.NEXT_PUBLIC_SERVER;
+const REVALIDATE = { next: { revalidate: 300 } };
+
+// ----- FETCH FUNCTIONS -----
+async function getCategories() {
+  const res = await fetch(`${SERVER}/variation/category/get`, REVALIDATE);
+  const data = await res.json();
+  return data.categories || []; 
+}
+
+async function getMostOrderedProducts() {
+  const res = await fetch(`${SERVER}/product/most-ordered-products`, REVALIDATE);
+  const data = await res.json();
+  return data.mostOrderedProducts || [];
+}
+
+async function getNewArrivals() {
+  const res = await fetch(`${SERVER}/product/get-new-arrival`, REVALIDATE);
+  const data = await res.json();
+  return data.products || [];
+}
+
+// async function getBlogs() {
+//   const res = await fetch(`${SERVER}/blog`, REVALIDATE);
+//   const data = await res.json();
+//   return data.blogs || [];
+// }
+
+// ----- SECTION COMPONENTS (Server Components that fetch data) -----
+async function CategoriesSection() {
+  const categories = await getCategories();
+  return <ShopByCategory categories={categories} />;
+}
+
+async function BestSellingSection() {
+  const products = await getMostOrderedProducts();
+  return <BestSellingCraftHome products={products} />;
+}
+
+async function NewArrivalsSection() {
+  const products = await getNewArrivals();
+  return <NewArrivals products={products} />;
+}
+
+// async function BlogSection() {
+//   const blogs = await getBlogs();
+//   return <BlogHero blogs={blogs} />;
+// }
+
+// ----- MAIN PAGE -----
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setInterval(() => setLoading(false), 500);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="h-screen">
-        <Loader />
-        
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white">
       <div className="relative">
+        {/* Hero is static/no data - render directly */}
         <Hero />
-        <ShopByCategory />
-        <BestSellingCraftHome />
+        
+        <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg mx-4 my-8" />}>
+          <CategoriesSection />
+        </Suspense>
+        
+        <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-lg mx-4 my-8" />}>
+          <BestSellingSection />
+        </Suspense>
       </div>
+      
+      {/* WhatClient is static data - render directly */}
       <WhatClient />
-      <NewArrivals />
-      <BlogHero />
+      
+      <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-lg mx-4 my-8" />}>
+        <NewArrivalsSection />
+      </Suspense>
+      
+      {/* <Suspense fallback={<div className="h-80 bg-gray-100 animate-pulse rounded-lg mx-4 my-8" />}>
+        <BlogSection />
+      </Suspense> */}
     </div>
   );
 }

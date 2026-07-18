@@ -10,9 +10,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiShare2, FiUsers, FiMapPin } from "react-icons/fi";
 
 import useAuth from "@/auth/useAuth";
-import CartSidebar from "../Cart/CartSidebar";
 import AccountSidebar from "../Cart/AccountSidebar";
 import SearchSidebar from "../Search/SearchSidebar";
+import CartSidebar from './../Cart/cartSidebar';
 
 export const Header = ({ setCartOpen }) => {
   const [isMobileMenu, setIsMobileMenu] = useState(false);
@@ -49,7 +49,7 @@ export const Header = ({ setCartOpen }) => {
 
   return (
     <>
-      <div className="bg-bg-darkBlue text-white text-xs text-center  py-2 tracking-wide">
+      <div className="bg-bg-darkBlue text-white text-xs text-center font-secondary  py-2 tracking-wide">
         Free shipping on orders above{" "}
         <span className="text-[#C8A96A] font-semibold">₹1,999</span> | Use code{" "}
         <span className="text-[#C8A96A] font-semibold">ARTISAN15</span> for 15%
@@ -66,7 +66,7 @@ export const Header = ({ setCartOpen }) => {
             </div>
 
             <div className="hidden lg:flex flex-1 justify-center">
-              <div className="flex items-center gap-10 text-[14px] font-medium text-[#1E2A38] whitespace-nowrap">
+              <div className="flex items-center gap-10 text-[14px] font-medium font-secondary  text-[#3A4A5C] whitespace-nowrap">
                 <Link
                   href="/collections"
                   className="hover:opacity-70 transition"

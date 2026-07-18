@@ -1,3 +1,4 @@
+// import './bones/registry';
 import "./globals.css";
 import { Providers } from "@/redux/provider";
 import ClientOnly from "@/components/ClientOnly";

@@ -18,7 +18,7 @@ const BlogsDetails = () => {
 
   const getAllBlog = async () => {
     try {
-      const response = await apiClient.get("/blog", {
+      const response = await apiClient.get("/blog/get-all-blogs", {
         pageNumber: currentPage,
       });
 

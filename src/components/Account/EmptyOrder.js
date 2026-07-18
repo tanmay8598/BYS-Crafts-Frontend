@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const EmptyOrder = () => {
   const router = useRouter();
   const handleClick = () => {
-    router.push("/");
+    router.push("/new-arrivals");
   };
   return (
     <>
@@ -23,7 +23,7 @@ const EmptyOrder = () => {
               textAlign: "center",
             }}
           >
-            {/* {cartLength > 0 ? cartLength : "0"} */}0
+           0
           </span>
         </div>
         <div className="my-5 text-gray-500">

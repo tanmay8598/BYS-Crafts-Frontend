@@ -6,6 +6,8 @@ import AddressPage from "@/components/Account/AddressPage";
 import MyProfile from "@/components/Account/MyProfile";
 import OrderPage from "@/components/Account/OrderPage";
 import { useState } from "react";
+import {useRouter} from 'next/navigation'
+import toast from "react-hot-toast";
 
 import AccountSettings from "@/components/Settings/AccountSettings";
 import {
@@ -21,7 +23,7 @@ import WishlistSection from './../../components/Account/WishlistSection';
 
 const Page = () => {
   const { user, logOut } = useAuth();
-
+ const router = useRouter()
   const [activeTab, setActiveTab] = useState("dashboard");
   
   
@@ -31,8 +33,14 @@ const Page = () => {
     { key: "wishlist", label: "Wishlist", icon: FiHeart },
     { key: "address", label: "Addresses", icon: FiMapPin },
     { key: "profile", label: "Personal info", icon: FiUser },
-    { key: "settings", label: "Settings", icon: FiSettings },
+  
   ];
+
+  const handleLogout = () => {
+    logOut()
+    toast.success("Logout success")
+    router.push("/")
+  }
 
 
   return (
@@ -79,7 +87,7 @@ const Page = () => {
   <div className="my-4 border-t border-[#e6dfd5]" />
 
   <div
-    onClick={() => logOut()}
+    onClick={() => handleLogout()}
     className="flex items-center gap-3 px-4 py-3 text-red-500 rounded-xl cursor-pointer hover:bg-red-50"
   >
     <FiLogOut size={18} />
@@ -107,7 +115,7 @@ const Page = () => {
           {activeTab === "wishlist" && <WishlistSection />}
           {activeTab === "address" && <AddressPage />}
           {activeTab === "profile" && <MyProfile />}
-          {activeTab === "settings" && <AccountSettings />}
+        
         </div>
       </div>
     </div>

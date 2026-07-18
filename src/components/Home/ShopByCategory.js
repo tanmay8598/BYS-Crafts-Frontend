@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/lovable/button";
+import { Card } from "@/components/ui/lovable/card";
 import {
   Carousel,
   CarouselContent,
@@ -7,11 +8,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/lovable/carousel";
-import { Card } from "@/components/ui/lovable/card";
-import apiClient from "@/api/client";
-import Link from "next/link";
-import { Button } from "@/components/ui/lovable/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const CategoryCard = ({ category, index }) => {
   const { name, image } = category;
@@ -56,33 +55,14 @@ const CategoryCard = ({ category, index }) => {
   );
 };
 
-const ShopByCategory = () => {
-  const [categories, setCategories] = useState([]);
+const ShopByCategory = ({ categories }) => {
+
+
   const [isMobile, setIsMobile] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  const fetchCategories = async () => {
-    try {
-      const res = await apiClient.get("/variation/category/get");
-
-      const formatted = res.data?.map((item) => ({
-        _id: item._id,
-        name: item.name,
-        productCount: item.productCount || item.products?.length || 0,
-        image: item.image,
-      }));
-
-      setCategories(formatted || []);
-    } catch (err) {
-      console.error("Category fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchCategories();
 
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -106,11 +86,7 @@ const ShopByCategory = () => {
           through generations
         </p>
 
-        {loading ? (
-          <div className="text-center py-10 text-gray-500">
-            Loading categories...
-          </div>
-        ) : isMobile ? (
+        {isMobile ? (
           <>
             <div className="grid grid-cols-2 gap-4">
               {(showAll ? categories : categories.slice(0, 4)).map(

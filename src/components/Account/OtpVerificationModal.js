@@ -67,12 +67,12 @@ const OTPVerificationModal = ({
         [isEmailMode ? "email" : "phone"]: isEmailMode ? email : mobile,
         otp: otpValue,
       };
-						// console.log("payload of verify", payload )
-			
+      // console.log("payload of verify", payload )
+
       try {
-				setVerifyLoading(true);
+        setVerifyLoading(true);
         const response = await apiClient.post(`/user/verify`, payload);
-				// console.log("repsonse of verify ", response )
+        // console.log("repsonse of verify ", response )
 
         if (!response.ok) {
           toast.error(response?.data?.message || "Verification Failed");
@@ -91,7 +91,7 @@ const OTPVerificationModal = ({
         setOtp(["", "", "", ""]);
         setIsEmailMode(false);
         setIsVerificationModalOpen(false);
-        
+
         // Check for redirect to checkout
         const shouldRedirect = localStorage.getItem("redirectToCheckout");
         if (shouldRedirect === "true") {
@@ -112,12 +112,12 @@ const OTPVerificationModal = ({
     try {
       const url = `/user${isEmailMode ? "/resend-otp" : "/resend-mobile-otp"}`;
 
-			// console.log("url of verify resend", url)
+      // console.log("url of verify resend", url)
 
       const response = await apiClient.post(url, {
         [isEmailMode ? "email" : "phone"]: isEmailMode ? email : mobile,
       });
-			// console.log("repsonse of verify resend", response )
+      // console.log("repsonse of verify resend", response )
 
       if (!response.ok) {
         throw new Error("Failed to resend OTP");
@@ -134,15 +134,15 @@ const OTPVerificationModal = ({
   return (
     <>
       <LogoInformation />
-      
+
       <div>
         <h2 className="text-xl md:text-2xl font-semibold text-gray-800 text-center mb-2">
           {isEmailMode ? "Email Verification" : "Mobile Verification"}
         </h2>
 
         <p className="text-gray-500 text-center mb-6 text-sm">
-          We've sent a 4-digit code to your {isEmailMode ? "email" : "mobile"}
-          . Enter it below to verify your account.
+          We've sent a 4-digit code to your {isEmailMode ? "email" : "mobile"}.
+          Enter it below to verify your account.
         </p>
       </div>
 
@@ -167,7 +167,9 @@ const OTPVerificationModal = ({
         onClick={handleVerifyProfile}
         disabled={verifyLoading}
         className={`bg-btnBg-primary text-white w-full font-bold py-3 px-4 focus:outline-none focus:shadow-outline transition ${
-          verifyLoading ? "opacity-60 cursor-not-allowed" : "hover:opacity-90 cursor-pointer"
+          verifyLoading
+            ? "opacity-60 cursor-not-allowed"
+            : "hover:opacity-90 cursor-pointer"
         }`}
       >
         {verifyLoading ? (

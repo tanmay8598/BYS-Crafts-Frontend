@@ -1,25 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import apiClient from "@/api/client";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import BestSellingCraftCard from "./BestSellingCraftCard";
 
-function BestSellingCraftHome() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    apiClient
-      .get("/product/most-ordered-products")
-      .then((res) => {
-        if (res.ok) {
-          setProducts(res.data.mostOrderedProducts || []);
-        }
-      })
-      .catch(console.error);
-  }, []);
-
+function BestSellingCraftHome({ products }) {
   return (
     <section className="py-5 bg-[#F5EFE0]">
       <div className="max-w-6xl mx-auto px-4">

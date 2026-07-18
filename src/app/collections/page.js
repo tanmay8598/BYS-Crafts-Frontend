@@ -61,7 +61,7 @@ const Page = () => {
         const response = await apiClient.get("/variation/category/get");
         // Fix: Check if response is successful
         if (response.status === 200 || response.ok) {
-          const data = response.data;
+          const data = response.data.categories;
           setCategories(data);
         } else {
           console.error("Failed to fetch categories:", response.statusText);

@@ -3,7 +3,6 @@ import { Popover } from "@headlessui/react";
 
 import { MenuIcon as Bars3Icon } from "@heroicons/react/outline";
 import SearchSidebar from "../Search/SearchSidebar";
-import CartSidebar from "../Cart/CartSidebar";
 import AccountSidebar from "../Cart/AccountSidebar";
 
 import { useSelector } from "react-redux";
@@ -16,6 +15,7 @@ import Link from "next/link";
 import { FaUserCheck } from "react-icons/fa6";
 
 import CategoryDropdown from "./CategoryDroupdown";
+import CartSidebar from './../Cart/cartSidebar';
 
 const MenuNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -225,7 +225,7 @@ const MenuNavbar = () => {
           </nav>
         </header>
 
-        <CartSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        <cartSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
         <AccountSidebar isOpen={isOpenAccount} setIsOpen={setIsOpenAccount} />
         <SearchSidebar isOpen={isOpenSearch} setIsOpen={setIsOpenSearch} />
         <MenuSidebar isOpen={isOpenSidebar} setIsOpen={setIsOpenSidebar} />

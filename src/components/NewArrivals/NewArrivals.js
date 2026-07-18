@@ -1,37 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import apiClient from "@/api/client";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import Link from "next/link";
+import { useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
+import { Autoplay, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import BestSellingCraftCard from "./../BestSellers/BestSellingCraftCard";
 
-const NewArrivals = () => {
-  const [products, setProducts] = useState([]);
-
+const NewArrivals = ({products}) => {
   const swiperRef = useRef(null);
-
-  const fetchData = async () => {
-    try {
-      const response = await apiClient.get("/product/get-new-arrival");
-      if (response.ok) {
-        setProducts(response.data.products || []);
-      }
-    } catch (err) {
-      console.error("Error fetching new arrivals:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const enoughForNav = products.length > 4;
+  const enoughForNav = products?.length > 4;
 
   return (
     <section className="py-5 bg-[#F5EFE0]">

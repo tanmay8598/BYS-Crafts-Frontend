@@ -1,38 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import BlogCard from "./BlogCard";
-import apiClient from "@/api/client";
-import Link from "next/link";
-import Loader from "../loader/Loader";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import BlogCard from "./BlogCard";
 
-const BlogHero = () => {
-  const [error, setError] = useState();
-  const [blogList, setBlogList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    getAllBlog();
-  }, []);
-
-  const getAllBlog = async () => {
-    try {
-      const response = await apiClient.get("/blog");
-      if (response.ok) {
-        setBlogList(response?.data);
-      } else {
-        setError(response.status);
-      }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const allblogs = blogList.blogs;
-
-  if (isLoading) return <Loader />;
+const BlogHero = ({blogs}) => {
 
   return (
     <section className="py-16 bg-[#faf6ed]">
@@ -58,7 +29,7 @@ const BlogHero = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
-          {allblogs?.slice(0, 3).map((blogData) => (
+          {blogs?.slice(0, 3).map((blogData) => (
             <BlogCard key={blogData._id} blogData={blogData} />
           ))}
         </div>

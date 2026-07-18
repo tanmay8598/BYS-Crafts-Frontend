@@ -119,8 +119,8 @@
     /* font-family: "Noto Sans", sans-serif;
     @apply bg-background text-foreground; */
 
-      font-family: "DM Sans", sans-serif;
-  @apply bg-background text-foreground;
+    font-family: "DM Sans", sans-serif;
+    @apply bg-background text-foreground;
   }
 
   /* Apply NEWSREADER to all headings */
