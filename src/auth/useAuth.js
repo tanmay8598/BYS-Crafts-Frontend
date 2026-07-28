@@ -8,7 +8,7 @@ const useAuth = () => {
   const logIn = (authToken) => {
     if (!authToken) return;
     const decodedUser = jwtDecode(authToken);
-      console.log("Full decoded token:", decodedUser); 
+    
     const userData = {
       ...decodedUser,
        id: decodedUser.id || decodedUser._id,

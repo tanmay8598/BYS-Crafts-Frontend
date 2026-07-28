@@ -1,36 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import WhatClientSaysCard from "./WhatClientSaysCard";
 
-const data = [
-  {
-    name: "Ankit Verma",
-    location: "Lucknow, Uttar Pradesh",
-    initials: "AV",
-    message:
-      "I ordered a handwoven kurta and honestly, the quality surprised me. It feels authentic and you can see the effort put in by the artisan. Definitely buying again.",
-  },
-  {
-    name: "Sneha Iyer",
-    location: "Chennai, Tamil Nadu",
-    initials: "SI",
-    message:
-      "The terracotta decor pieces I received are beautiful and very unique. It’s nice to support local artisans while also getting something so elegant for my home.",
-  },
-  {
-    name: "Rahul Chauhan",
-    location: "Jaipur, Rajasthan",
-    initials: "RC",
-    message:
-      "Bought a handcrafted leather wallet and the finishing is top-notch. You can feel the difference compared to factory-made products. Worth every rupee.",
-  },
-];
+const WhatClient = ({ testimonials = [] }) => {
+  const [testimonialData, setTestimonialData] = useState(testimonials);
 
-const WhatClient = () => {
+  const fallbackData = [
+    {
+      name: "Ankit Verma",
+      location: "Lucknow, Uttar Pradesh",
+      initials: "AV",
+      message:
+        "I ordered a handwoven kurta and honestly, the quality surprised me. It feels authentic and you can see the effort put in by the artisan. Definitely buying again.",
+    },
+    {
+      name: "Sneha Iyer",
+      location: "Chennai, Tamil Nadu",
+      initials: "SI",
+      message:
+        "The terracotta decor pieces I received are beautiful and very unique. It's nice to support local artisans while also getting something so elegant for my home.",
+    },
+    {
+      name: "Rahul Chauhan",
+      location: "Jaipur, Rajasthan",
+      initials: "RC",
+      message:
+        "Bought a handcrafted leather wallet and the finishing is top-notch. You can feel the difference compared to factory-made products. Worth every rupee.",
+    },
+  ];
+
+  // Use fetched data or fallback
+  const displayData = testimonialData.length > 0 ? testimonialData : fallbackData;
+
   return (
     <section className="bg-[#0F1E2F] py-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
@@ -58,8 +63,8 @@ const WhatClient = () => {
               1024: { slidesPerView: 3 },
             }}
           >
-            {data.map((item, index) => (
-              <SwiperSlide key={index}>
+            {displayData.map((item, index) => (
+              <SwiperSlide key={item._id || index}>
                 <WhatClientSaysCard data={item} />
               </SwiperSlide>
             ))}

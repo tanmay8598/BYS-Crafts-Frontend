@@ -1,86 +1,10 @@
-
-
-
-// "use client";
-// import React from "react";
-// import Image from "next/image";
-
-// const NewOrderChild = ({ orderData }) => {
-//   return (
-//     <div className="bg-[#f8f3eb] border border-[#e6dfd5] rounded-xl mb-5 overflow-hidden">
-
-//       {/* HEADER */}
-//       <div className="flex justify-between items-center px-4 py-3 bg-[#efe7dc]">
-//         <div className="text-xs text-gray-600">
-//           #{orderData?._id?.slice(-10)} •{" "}
-//           {new Date(orderData.createdAt).toDateString()}
-//         </div>
-
-//         <span className="text-xs bg-[#f4c430] text-[#7a5c00] px-3 py-1 rounded-full">
-//           Processing
-//         </span>
-//       </div>
-
-//       {/* ITEMS */}
-//       {orderData.orderItems.map((item) => (
-//         <div
-//           key={item._id}
-//           className="flex justify-between items-center px-4 py-3 border-t border-[#e6dfd5]"
-//         >
-//           <div className="flex gap-3 items-center">
-//             <Image
-//               src={item.image}
-//               width={55}
-//               height={55}
-//               alt="product"
-//               className="rounded-md object-cover"
-//             />
-
-//             <div>
-//               <p className="text-sm font-medium text-[#2c2c2c]">
-//                 {item.name}
-//               </p>
-//               <p className="text-xs text-gray-500">
-//                 Qty: {item.qty}
-//               </p>
-//             </div>
-//           </div>
-
-//           <div className="text-sm font-semibold text-[#2c2c2c]">
-//             ₹{item.price}
-//           </div>
-//         </div>
-//       ))}
-
-//       {/* FOOTER */}
-//       <div className="flex justify-between items-center px-4 py-3 border-t border-[#e6dfd5]">
-//         <p className="text-sm text-gray-600">
-//           Order total:{" "}
-//           <span className="font-semibold text-[#2c2c2c]">
-//             ₹{orderData.totalPrice}
-//           </span>
-//         </p>
-
-//         <div className="flex gap-2">
-//           <button className="border border-[#d6cec2] px-3 py-1 rounded-md text-xs hover:bg-[#efe7dc]">
-//             Track order
-//           </button>
-//           <button className="border border-[#d6cec2] px-3 py-1 rounded-md text-xs hover:bg-[#efe7dc]">
-//             Invoice
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default NewOrderChild;
-
 "use client";
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const NewOrderChild = ({ orderData }) => {
+    const router = useRouter();
   const getStatusStyle = (status) => {
     switch (status) {
       case "Delivered":
@@ -172,13 +96,10 @@ const NewOrderChild = ({ orderData }) => {
         </p>
 
         <div className="flex gap-3">
-          <button className="text-[12px] px-4 py-[6px] border border-[#d8d1c5] rounded-lg text-gray-600 hover:bg-[#e9e1d5] transition">
-            Track order
+          <button onClick={() =>  router.push(`/account/${orderData._id}`)} className="text-[12px] px-4 py-[6px] border border-[#d8d1c5] rounded-lg text-gray-600 hover:bg-[#e9e1d5] transition">
+           View Details
           </button>
 
-          <button className="text-[12px] px-4 py-[6px] border border-[#d8d1c5] rounded-lg text-gray-600 hover:bg-[#e9e1d5] transition">
-            Invoice
-          </button>
         </div>
       </div>
     </div>

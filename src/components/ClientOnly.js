@@ -5,7 +5,7 @@ import AuthContext from "@/auth/context";
 import Footer from "@/components/Footer/Footer";
 import { Header } from "./Navbar/Header";
 import AccountSidebar from './Cart/AccountSidebar';
-import CartSidebar from './Cart/cartSidebar';
+import CartSidebar from './Cart/CartSidebar';
 
 
 const ClientOnly = ({ children }) => {

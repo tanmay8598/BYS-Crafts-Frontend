@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiShare2, FiUsers, FiMapPin } from "react-icons/fi";
 
 import useAuth from "@/auth/useAuth";
+import { useCartCount } from "@/hooks/useCartCount";
+import apiClient from "@/api/client";
 import AccountSidebar from "../Cart/AccountSidebar";
 import SearchSidebar from "../Search/SearchSidebar";
 import CartSidebar from './../Cart/cartSidebar';
@@ -19,16 +21,13 @@ export const Header = ({ setCartOpen }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-
+  const [bannerMessage, setBannerMessage] = useState("");
   const [cartLength, setCartLength] = useState(0);
-
-  const selector = useSelector((state) => state.cart);
   const { user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    setCartLength(selector.cart.length);
-  }, [selector.cart]);
+  const { count: cartCount, loading } = useCartCount();
+
 
   const handleShare = async () => {
   try {
@@ -47,14 +46,32 @@ export const Header = ({ setCartOpen }) => {
   }
 };
 
+const getPrices = async () => {
+  try {
+    const response = await apiClient.get("/delivery-fee/get", {
+      paymentMethod: "PREPAID",
+    });
+
+    if (response.ok) {
+      setBannerMessage(response.data.data.bannerMessage);
+    }
+  } catch (error) {
+    console.error("Error fetching banner:", error);
+  }
+};
+
+useEffect(() => {
+  getPrices();
+}, []);
+
   return (
     <>
-      <div className="bg-bg-darkBlue text-white text-xs text-center font-secondary  py-2 tracking-wide">
-        Free shipping on orders above{" "}
-        <span className="text-[#C8A96A] font-semibold">₹1,999</span> | Use code{" "}
-        <span className="text-[#C8A96A] font-semibold">ARTISAN15</span> for 15%
-        off
+
+        {bannerMessage && (
+      <div className="bg-bg-darkBlue text-white text-xs text-center font-secondary  py-1 tracking-wide">
+        {bannerMessage}
       </div>
+    )}
 
       <nav className="sticky top-0 z-50 bg-bg-light border-b-2 border-[#1B3A5C14]">
         <div className="w-full px-6 lg:px-12 py-4">
@@ -97,11 +114,11 @@ export const Header = ({ setCartOpen }) => {
 
               <button  onClick={() => setCartOpen(true)}   className="relative">
                 <ShoppingCart size={20} />
-                {cartLength > 0 && (
-                  <span className="absolute -top-3 -right-3 bg-[#E8C547] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
-                    {cartLength}
-                  </span>
-                )}
+               {!loading && cartCount > 0 && (
+    <span className="absolute -top-3 -right-3 bg-[#E8C547] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
+      {cartCount > 9 ? "9+" : cartCount}
+    </span>
+  )}
               </button>
 
               <button

@@ -17,18 +17,23 @@ import Breadcrumbs from "@/components/Breadcrumb/Breadcrumbs";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { FiShield, FiTruck, FiRotateCcw } from "react-icons/fi";
 import ReviewSection from './../../../../components/Review/ReviewSection';
-import apiClient from "@/api/client";
 import ReviewModal from './../../../../components/Review/ReviewModal';
+import { useCartStore } from './../../../../stores/cartStore';
+// import apiClient from "@/api/client";
+import apiClient from './../../../../api/client';
+
 
 
 export default function ProductPage({ product, related }) {
   const router = useRouter();
   const dispatch = useDispatch();
+    const { addToCart, cart: localCart, getTotalQuantity } = useCartStore();
   const { user } = useAuth();
- const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [qty, setQty] = useState(1);
 
-    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
@@ -41,7 +46,6 @@ export default function ProductPage({ product, related }) {
   const productPrice = product.discount
     ? product.sell_price - (product.discount * product.sell_price) / 100
     : product.sell_price;
-
 
      // Fetch Reviews
   const fetchReviews = useCallback(async (page = 1) => {
@@ -83,22 +87,141 @@ export default function ProductPage({ product, related }) {
     fetchReviews(1);
   }, [fetchReviews]);
 
-  const handleQuantity = useCallback(
-    (type) => {
-      if (type === "dec" && quantity > 1) {
-        setQuantity(quantity - 1);
-      } else if (type === "inc") {
-        setQuantity(quantity + 1);
-      }
-    },
-    [quantity]
-  );
+  // const handleQuantity = useCallback(
+  //   (type) => {
+  //     if (type === "dec" && quantity > 1) {
+  //       setQuantity(quantity - 1);
+  //     } else if (type === "inc") {
+  //       setQuantity(quantity + 1);
+  //     }
+  //   },
+  //   [quantity]
+  // );
 
-    const notify = useCallback(() => {
-    dispatch(add({ product, quantity }));
-    // toast.success("Success. Check your cart!");
-     window.openCartSidebar();
-  }, [product, quantity]);
+
+    const increment = async () => {
+    const availableStock = product?.countInStock?.qty || 0;
+    const currentTotalQuantity = await getCurrentCartTotal();
+
+    // Check global cart limit first
+    if (currentTotalQuantity >= 4) {
+      toast.error(
+        "Maximum 4 items allowed per order. Please checkout or remove items from cart.",
+      );
+      return;
+    }
+
+    // Check per-product limit
+    if (qty >= 4) {
+      toast.error("You can add maximum 4 items of the same product at a time.");
+      return;
+    }
+
+    // Check stock availability
+    if (qty < availableStock) {
+      setQty(qty + 1);
+    } else {
+      toast.error(`Only ${availableStock} items available in stock`);
+    }
+  };
+
+  const decrement = () => qty > 1 && setQty(qty - 1);
+
+
+    // Get current total quantity in cart (for logged-in users)
+  const getCurrentCartTotal = async () => {
+    if (user) {
+      try {
+        const response = await apiClient.get("/cart/get", {
+          userId: user?.id,
+        });
+
+        // console.log("count of cart", response)
+        let totalQty = 0;
+        if (response.data && Array.isArray(response.data?.cart)) {
+          totalQty = response.data.cart.reduce(
+            (sum, item) => sum + (item?.quantity || 0),
+            0,
+          );
+        }
+        return totalQty;
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+        return 0;
+      }
+    } else {
+      return getTotalQuantity(); // Use Zustand's getTotalQuantity
+    }
+  };
+
+   const addProductToCart = async (product) => {
+
+    // Check individual product limit
+    if (qty > 4) {
+      toast.error("You can add maximum 4 items of the same product at a time.");
+      return;
+    }
+
+    // Get current total quantity in cart
+    const currentTotalQuantity = await getCurrentCartTotal();
+    const newTotalQuantity = currentTotalQuantity + qty;
+
+    // GLOBAL CART LIMIT CHECK (max 4 total items)
+    if (newTotalQuantity > 4) {
+      toast.error(
+        `Maximum 4 items allowed per order. You already have ${currentTotalQuantity} item(s) in cart. Cannot add ${qty} more.`,
+      );
+      return;
+    }
+
+    try {
+      if (user) {
+
+        console.log("payload",  {
+          userId: user?.id,
+          item: {
+            product: product?._id,
+            qty: qty,
+          },
+          type: "increment",
+        } )
+     
+        // User is logged in - add to backend
+        const response = await apiClient.post("/cart/add", {
+          userId: user?.id,
+          item: {
+            product: product?._id,
+            qty: qty,
+          },
+          type: "increment",
+        });
+        console.log("user ad res", response)
+
+        if (response.ok) {
+          toast.success(response.data.message || "Item added to cart!");
+          window.dispatchEvent(new CustomEvent("cartUpdated"));
+          window.openCartSidebar();
+        } else {
+          toast.error("Failed to add item to cart");
+        }
+      } else {
+        // User is not logged in - add to Zustand
+        addToCart(product, qty);
+        toast.success("Item added to cart!");
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+        window.openCartSidebar();
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add item to cart");
+    }
+  };
+
+  //   const notify = useCallback(() => {
+  //   dispatch(add({ product, quantity }));
+  //   // toast.success("Success. Check your cart!");
+  //    window.openCartSidebar();
+  // }, [product, quantity]);
 
   const buyNow = useCallback(() => {
     if (!user) {
@@ -261,7 +384,7 @@ export default function ProductPage({ product, related }) {
 <div className="flex items-center bg-[#f3efe7] rounded-md overflow-hidden border border-[#e5e0d6] h-[36px]">
 
   <button
-    onClick={() => handleQuantity("dec")}
+    onClick={decrement}
     className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
   >
     <FiMinus size={14} />
@@ -272,7 +395,7 @@ export default function ProductPage({ product, related }) {
   </span>
 
   <button
-    onClick={() => handleQuantity("inc")}
+    onClick={increment}
     className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
   >
     <FiPlus size={14} />
@@ -289,7 +412,7 @@ export default function ProductPage({ product, related }) {
 
        <div className="flex flex-col sm:flex-row gap-3 mt-4">
   <button
-    onClick={notify}
+    onClick={ () => addProductToCart(product)}
     className="bg-[#E0B94B] w-full py-3 rounded-lg font-medium text-sm"
   >
     Add to cart

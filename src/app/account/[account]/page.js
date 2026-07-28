@@ -1,3 +1,5 @@
+
+
 "use client";
 import apiClient from "@/api/client";
 import useAuth from "@/auth/useAuth";
@@ -41,98 +43,164 @@ const page = () => {
   };
 
   if (loading) {
-    return (
-      <>
-        <Loader />
-      </>
-    );
+    return <Loader />;
   }
+
   const handleBackClick = () => {
     router.push("/account/");
   };
 
-
-
   return (
-    <div className="shadow-lg m-8 rounded-lg pb-4 p-6 shadow-blue-gray-300 bg-white">
-      {/* Order Header Section */}
-      <div className="border-b-2 pb-4 mb-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center text-[#4F46E5] text-xl font-semibold">
-            <IoIosCart className="mr-2 text-2xl" />
-            <span>My Order Details</span>
+    <div className="min-h-screen bg-[#FAF6ED] py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={handleBackClick}
+          className="flex items-center gap-2 text-[#1f3b57] hover:text-[#2e7d5b] transition-colors mb-6 font-medium"
+        >
+          {/* <IoArrowBack className="text-lg" /> */}
+          <span>Back to Orders</span>
+        </button>
+
+        {/* Main Card */}
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#e6dfd2]">
+          {/* Order Header */}
+          <div className="bg-[#1f3b57] px-6 py-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <IoIosCart className="text-white text-2xl" />
+              <div>
+                <h1 className="text-white text-lg font-semibold">Order Details</h1>
+                <p className="text-white/60 text-sm">
+                  #{myOrder?._id?.slice(-8)?.toUpperCase() || "N/A"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                myOrder?.deliveryStatus === "Delivered" 
+                  ? "bg-green-50 text-green-700 border-green-200" 
+                  : myOrder?.deliveryStatus === "Processing"
+                  ? "bg-blue-50 text-blue-700 border-blue-200"
+                  : myOrder?.deliveryStatus === "Shipped"
+                  ? "bg-purple-50 text-purple-700 border-purple-200"
+                  : "bg-gray-50 text-gray-700 border-gray-200"
+              }`}>
+                {myOrder?.deliveryStatus || "Processing"}
+              </span>
+            </div>
           </div>
-          <button
-            onClick={handleBackClick}
-            className="bg-primary text-white px-4 py-2  transition"
-          >
-            Back
-          </button>
-        </div>
-      </div>
 
-      {/* Order Address Section */}
-      <OrderAddress mydata={myOrder} />
+          {/* Order Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b border-[#e6dfd2] bg-[#faf8f5]">
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Total Items</p>
+              <p className="text-lg font-bold text-[#1f3b57]">
+                {myOrder?.orderItems?.reduce((sum, item) => sum + item.qty, 0) || 0}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Total Amount</p>
+              <p className="text-lg font-bold text-[#1f3b57]">
+                ₹{myOrder?.totalPrice?.toLocaleString() || 0}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Payment</p>
+              <p className={`text-sm font-semibold ${myOrder?.isPaid ? "text-green-600" : "text-amber-600"}`}>
+                {myOrder?.isPaid ? "Paid" : "Pending"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Order Date</p>
+              <p className="text-sm font-medium text-[#1f3b57]">
+                {myOrder?.createdAt ? new Date(myOrder.createdAt).toLocaleDateString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }) : "N/A"}
+              </p>
+            </div>
+          </div>
 
-      {/* Items Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Items</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-300 text-left">
-            <thead>
-              <tr className="bg-gray-100 text-gray-600">
-                <th className="border border-gray-300 p-4 font-medium">
-                  Product Name
-                </th>
-                <th className="border border-gray-300 p-4 font-medium">
-                  Product Image
-                </th>
-                <th className="border border-gray-300 p-4 font-medium">
-                  Quantity
-                </th>
-                <th className="border border-gray-300 p-4 font-medium">
-                  Price
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {myOrder?.orderItems?.length > 0 ? (
-                myOrder.orderItems.map((data, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="border p-4 border-gray-300 text-gray-700">
-                      {data?.name}
-                    </td>
-                    <td className="border p-4 border-gray-300">
-                      <div className="flex justify-center">
-                        <Image
-                          src={data?.image}
-                          width={80}
-                          height={80}
-                          alt="Product Image"
-                          className="object-contain w-20 h-20 rounded-lg shadow"
-                        />
-                      </div>
-                    </td>
-                    <td className="border p-4 border-gray-300 text-center text-gray-700">
-                      {data?.qty}
-                    </td>
-                    <td className="border p-4 border-gray-300 text-center font-semibold text-gray-800">
-                      ₹{data?.price}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="4"
-                    className="border p-4 text-center border-gray-300 text-gray-600"
-                  >
-                    No order items available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <div className="p-6">
+            {/* Order Address Section */}
+            <div className="mb-6">
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                Shipping Address
+              </h2>
+              <OrderAddress mydata={myOrder} />
+            </div>
+
+            {/* Items Section */}
+            <div>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                Order Items
+              </h2>
+
+              <div className="overflow-hidden rounded-lg border border-[#e6dfd2]">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-[#f5f2eb]">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Product
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Image
+                        </th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Qty
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Price
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myOrder?.orderItems?.length > 0 ? (
+                        myOrder.orderItems.map((data, index) => (
+                          <tr key={index} className="border-t border-[#e6dfd2] hover:bg-[#faf8f5] transition-colors">
+                            <td className="px-4 py-3">
+                              <p className="text-sm font-medium text-[#1f3b57] line-clamp-2">
+                                {data?.name}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#f5f2eb] border border-[#e6dfd2]">
+                                <Image
+                                  src={data?.image || "/placeholder.png"}
+                                  width={56}
+                                  height={56}
+                                  alt={data?.name || "Product"}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#f5f2eb] text-sm font-semibold text-[#1f3b57]">
+                                {data?.qty}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="text-sm font-medium text-gray-700">
+                                ₹{data?.price?.toLocaleString()}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4" className="px-4 py-8 text-center text-gray-500">
+                            No order items available
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

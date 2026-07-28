@@ -33,6 +33,20 @@ async function getNewArrivals() {
   return data.products || [];
 }
 
+async function getTestimonials() {
+  try {
+    const res = await fetch(`${SERVER}/testimonial/get-active-testimonials`, REVALIDATE);
+    if (!res.ok) {
+      throw new Error('Failed to fetch testimonials');
+    }
+    const data = await res.json();
+    return data.testimonials || [];
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
+    return []; // Return empty array to use fallback data
+  }
+}
+
 // async function getBlogs() {
 //   const res = await fetch(`${SERVER}/blog`, REVALIDATE);
 //   const data = await res.json();
@@ -54,6 +68,12 @@ async function NewArrivalsSection() {
   const products = await getNewArrivals();
   return <NewArrivals products={products} />;
 }
+
+async function TestimonialsSection() {
+  const testimonials = await getTestimonials();
+  return <WhatClient testimonials={testimonials} />;
+}
+
 
 // async function BlogSection() {
 //   const blogs = await getBlogs();
@@ -78,7 +98,10 @@ export default function Home() {
       </div>
       
       {/* WhatClient is static data - render directly */}
-      <WhatClient />
+      {/* <WhatClient /> */}
+         <Suspense fallback={<div className="h-96 bg-gray-800 animate-pulse rounded-lg mx-4 my-8" />}>
+        <TestimonialsSection />
+      </Suspense>
       
       <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-lg mx-4 my-8" />}>
         <NewArrivalsSection />
