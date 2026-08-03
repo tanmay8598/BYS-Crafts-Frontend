@@ -72,24 +72,37 @@ const Footer = () => {
               </li>
               <li className="hover:text-white cursor-pointer">Impact report</li>
               <li className="hover:text-white cursor-pointer">Careers</li>
-              <li className="hover:text-white cursor-pointer">Press</li>
+            
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold mb-4 text-white">
-              Support
-            </h4>
-            <ul className="space-y-2 text-sm text-[#FFFFFF80]">
-              <li className="hover:text-white cursor-pointer">Contact us</li>
-              <li className="hover:text-white cursor-pointer">Shipping info</li>
-              <li className="hover:text-white cursor-pointer">
-                Returns & exchange
-              </li>
-              <li className="hover:text-white cursor-pointer">FAQs</li>
-              <li className="hover:text-white cursor-pointer">Track order</li>
-            </ul>
-          </div>
+         <div>
+  <h4 className="text-sm font-semibold mb-4 text-white">Support</h4>
+  <ul className="space-y-4 text-sm text-[#FFFFFF80]">
+    <li>
+      <Link href="/contact-us" className="block hover:text-white transition cursor-pointer">
+        Contact us
+      </Link>
+    </li>
+   
+    <li>
+      <Link href="/privacy-policy" className="block hover:text-white transition cursor-pointer">
+        Privacy Policy
+      </Link>
+    </li>
+    <li>
+      <Link href="/terms-conditions" className="block hover:text-white transition cursor-pointer">
+        Terms & Conditions
+      </Link>
+    </li>
+    <li>
+      <Link href="/return-cancellations" className="block hover:text-white transition cursor-pointer">
+        Returns & exchange
+      </Link>
+    </li>
+ 
+  </ul>
+</div>
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">

@@ -1127,7 +1127,7 @@ const page = () => {
                   <div className="flex justify-between items-center bg-purple-50 p-2 rounded-lg -mx-2 px-2">
                     <div className="flex flex-col">
                       <span className="text-purple-600 font-medium text-sm">
-                        🎯 Combo Savings
+                         Combo Savings
                       </span>
                       <span className="text-xs text-purple-400">
                         Additional discount on combo items

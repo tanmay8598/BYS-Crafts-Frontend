@@ -14,11 +14,14 @@ import { FaMoneyCheck } from "react-icons/fa6";
 import { FiArrowRight, FiShoppingBag } from "react-icons/fi";
 import { IoClose, IoTrashOutline } from "react-icons/io5";
 import { useCartStore } from './../../stores/cartStore';
+import { GiPresent } from "react-icons/gi";
+import CompactLinkedOffers from "../offers/CompactLinkedOffers";
 
 export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
   const router = useRouter();
   
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [updatingItem, setUpdatingItem] = useState(null);
   const [backendCartData, setBackendCartData] = useState([]);
@@ -31,6 +34,13 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
   const [extraDiscount, setExtraDiscount] = useState(0);
   const [codHandlingCharge, setCodHandlingCharge] = useState(0);
   const [activeDiscountType, setActiveDiscountType] = useState(null);
+
+  // Offers states
+const [selectedParentForOffers, setSelectedParentForOffers] = useState(null);
+const [showLinkedOffers, setShowLinkedOffers] = useState(false);
+const [availableParents, setAvailableParents] = useState([]);
+const [isCheckingOffers, setIsCheckingOffers] = useState(false);
+const [isOffersExpanded, setIsOffersExpanded] = useState(true);
 
   // Backend totals
   const [backendTotals, setBackendTotals] = useState({
@@ -51,6 +61,57 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
 
   // Merge local and backend carts
   const cartData = user ? backendCartData : localCart;
+
+  // Check linked offers for cart
+const checkLinkedOffersForCart = async () => {
+  if (!user || cartData.length === 0) return;
+
+  setIsCheckingOffers(true);
+  try {
+    const parentsWithOffers = [];
+
+    for (const item of cartData) {
+      const product = getProduct(item);
+      if (!product?._id) continue;
+      
+      const response = await apiClient.get(
+        "/linked-offer/get-linked-offers-by-product",
+        {
+          productId: product._id,
+        },
+      );
+
+      if (response.data?.offers?.length > 0) {
+        parentsWithOffers.push({
+          productId: product._id,
+          product: product,
+          offers: response.data.offers,
+        });
+      }
+    }
+
+    setAvailableParents(parentsWithOffers);
+    if (parentsWithOffers.length > 0) {
+      setSelectedParentForOffers(parentsWithOffers[0]);
+      setShowLinkedOffers(true);
+    } else {
+      setShowLinkedOffers(false);
+    }
+  } catch (error) {
+    console.error("Error checking linked offers:", error);
+  } finally {
+    setIsCheckingOffers(false);
+  }
+};
+
+// Refresh cart data
+const refreshCartData = async () => {
+  if (user) {
+    await getCartCount();
+    await applyLinkedDiscountsToCart();
+    await checkLinkedOffersForCart();
+  }
+};
 
   // Get total quantity in cart
   const getTotalCartQuantity = () => {
@@ -197,12 +258,14 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
   // Fetch cart from backend
   const getCartCount = async () => {
     if (!user) return;
+
+      setLoading(true); 
  
     try {
       const response = await apiClient.get("/cart/get", {
         userId: user?.id,
       });
-      console.log("cart get res...", response)
+    
 
       let backendItems = [];
       if (response.data && Array.isArray(response.data?.cart)) {
@@ -222,7 +285,9 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
     } catch (error) {
       console.error("Error fetching cart:", error);
       setBackendCartData([]);
-    }
+    }finally {
+    setLoading(false); 
+  }
   };
 
   // Remove item from cart
@@ -357,6 +422,16 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
     onClose();
   };
 
+  useEffect(() => {
+  if (user && cartData.length > 0) {
+    checkLinkedOffersForCart();
+  } else {
+    setShowLinkedOffers(false);
+    setAvailableParents([]);
+    setSelectedParentForOffers(null);
+  }
+}, [user, cartData]);
+
   // Sync cart when user logs in
   useEffect(() => {
     if (user && localCart?.length > 0) {
@@ -372,9 +447,11 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
 
   // Fetch cart when user logs in or cart opens
   useEffect(() => {
-    if (user && isOpen) {
-      getCartCount();
-    }
+   if (user && isOpen) {
+    getCartCount();
+  } else if (!user) {
+    setLoading(false);
+  }
   }, [user, isOpen]);
 
   // Fetch delivery prices on mount
@@ -416,6 +493,36 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
     const codCharge = activeDiscountType === "COD" ? codHandlingCharge : 0;
     return baseTotal + deliveryFee + codCharge - discountAmount;
   };
+
+  if (loading) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed right-0 top-0 h-full w-full sm:w-[400px] md:w-[450px] bg-[#F7F3EA] z-50 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl overflow-hidden"
+          >
+            <div className="flex justify-between items-center p-5 bg-white border-b border-[#E6DECF] rounded-tl-4xl">
+              <h2 className="font-semibold text-xl text-[#1E2A38]">Your Cart</h2>
+              <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                <IoClose className="text-xl cursor-pointer text-gray-600" />
+              </button>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#E0B94B] border-t-transparent"></div>
+              <p className="text-gray-500 mt-4">Loading your cart...</p>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
 
   // Empty cart view
   if (!cartData || cartData.length === 0) {
@@ -534,8 +641,83 @@ export default function CartSidebar({ isOpen, onClose, onOpenAccount }) {
               </button>
             </div>
 
+            {/* Offers Section */}
+{showLinkedOffers && selectedParentForOffers && (
+  <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-50 to-amber-50 border-b border-primary-200 shadow-sm">
+    <div
+      onClick={() => setIsOffersExpanded(!isOffersExpanded)}
+      className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-primary-100/50 transition-colors"
+    >
+      <div className="flex items-center gap-2">
+        <GiPresent className="text-primary-400 text-sm animate-bounce" />
+        <p className="text-xs font-semibold text-primary-600">
+          Special Add-On Offers Available!
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-primary-500 font-medium">
+          Add to save more
+        </span>
+        {isOffersExpanded ? (
+          <FaChevronUp className="w-3 h-3 text-primary-500" />
+        ) : (
+          <FaChevronDown className="w-3 h-3 text-primary-500" />
+        )}
+      </div>
+    </div>
+
+    {/* Collapsible Content */}
+    <AnimatePresence>
+      {isOffersExpanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="overflow-hidden"
+        >
+          <div className="px-3 pb-3 max-h-48 lg:max-h-40 overflow-y-auto hide-scrollbar">
+            {/* Product selector - Compact version */}
+            {availableParents.length > 1 && (
+              <div className="flex items-center gap-1 mb-2 overflow-x-auto hide-scrollbar">
+                <span className="text-[10px] pr-2 text-gray-500 whitespace-nowrap">
+                  For:
+                </span>
+                <div className="flex gap-1">
+             {availableParents.map((parent) => (
+  <button
+    key={parent.productId}
+    onClick={() => setSelectedParentForOffers(parent)}
+    className={`text-[10px] px-3 py-1 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap font-medium ${
+      selectedParentForOffers?.productId === parent.productId
+        ? "bg-[#E0B94B] text-[#1f3b57] shadow-md scale-105 ring-2 ring-[#E0B94B] ring-offset-1"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-105"
+    }`}
+  >
+    {parent.product.name.length > 15
+      ? parent.product.name.substring(0, 15) + "..."
+      : parent.product.name}
+  </button>
+))}
+                </div>
+              </div>
+            )}
+
+            {/* CompactLinkedOffers component */}
+            <CompactLinkedOffers
+              parentProductId={selectedParentForOffers.productId}
+              parentProduct={selectedParentForOffers.product}
+              onAddSuccess={refreshCartData}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+)}
+
             {/* Cart Items - Scrollable */}
-            <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto hide-scrollbar p-4 space-y-3">
               {cartData.map((item) => {
                 const product = getProduct(item);
                 const productPrice = product?.sell_price || product?.price || 0;

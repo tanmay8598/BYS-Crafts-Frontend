@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>http://localhost:3000/district/Jhansi</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Lalitpur</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Banda</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Jalaun</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Chitrakoot</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Mahoba</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3000/district/Hamirpur</loc>
+    <lastmod>2026-08-03T15:18:11.516Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

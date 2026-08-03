@@ -66,6 +66,7 @@ useEffect(() => {
 
   return (
     <>
+    <div className="sticky top-0 z-50">
 
         {bannerMessage && (
       <div className="bg-bg-darkBlue text-white text-xs text-center font-secondary  py-1 tracking-wide">
@@ -73,7 +74,7 @@ useEffect(() => {
       </div>
     )}
 
-      <nav className="sticky top-0 z-50 bg-bg-light border-b-2 border-[#1B3A5C14]">
+      <nav className="bg-bg-light border-b-2 border-[#1B3A5C14]">
         <div className="w-full px-6 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -221,6 +222,7 @@ useEffect(() => {
       <CartSidebar isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
       <AccountSidebar isOpen={isAccountOpen} setIsOpen={setIsAccountOpen} />
       <SearchSidebar isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
+       </div>
     </>
   );
 };

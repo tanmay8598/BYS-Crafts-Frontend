@@ -46,10 +46,6 @@ const ReviewModal = ({
       }
     }
 
-    // if (imageUrls.length + files.length > maxImages) {
-    //   toast.error(`Maximum ${maxImages} images allowed`);
-    //   return;
-    // }
 
     const formData = new FormData();
     files.forEach((file) => {
@@ -67,9 +63,9 @@ const ReviewModal = ({
         },
       );
 
-      console.log("first iamge", response);
+    
       if (response.ok) {
-        // setImageUrls((prev) => [...prev, ...response.data]);
+        setImageUrls((prev) => [...prev, ...response.data]);
         toast.success("Images uploaded successfully!");
       }
     } catch (error) {
@@ -80,44 +76,44 @@ const ReviewModal = ({
     }
   };
 
-  const handleSubmit = async () => {
-    if (!rating || !comment.trim()) {
-      toast.error("Please add rating & review");
-      return;
-    }
+const handleSubmit = async () => {
+  if (!rating || !comment.trim()) {
+    toast.error("Please add rating & review");
+    return;
+  }
 
-    if (comment.length < 5) {
-      toast.error("Review should be at least 5 characters");
-      return;
-    }
+  if (comment.length < 5) {
+    toast.error("Review should be at least 5 characters");
+    return;
+  }
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    try {
-      const reviewPayload = {
-        rating,
-        comment,
-        userId: user?.id,
-        productId,
-        // image: imageUrl || null,
-        image: imageUrls?.length > 0 ? imageUrls : null,
-      };
+  try {
+    const reviewPayload = {
+      rating,
+      comment,
+      userId: user?.id,
+      productId,
+      image: imageUrls?.length > 0 ? imageUrls : null,
+    };
 
-      await onReviewSubmit(reviewPayload);
+    await onReviewSubmit(reviewPayload);
 
-      // Reset form
-      setRating(0);
-      setComment("");
-      setImageFiles(null);
-      setImageUrls("");
+    // Reset form - ONLY SET ONCE
+    setRating(0);
+    setComment("");
+    setImageFiles([]);   // Use empty array
+    setImageUrls([]);    // Use empty array
+    setImageUrls(null);
 
-      onClose();
-    } catch (err) {
-      toast.error("Failed to submit review");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    onClose();
+  } catch (err) {
+    toast.error("Failed to submit review");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);

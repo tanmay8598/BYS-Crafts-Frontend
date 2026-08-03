@@ -1,13 +1,11 @@
-
-
 "use client";
 import React, { useState, useCallback } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import ProductDetailsCarousel from "@/components/ProductDetailsCarousel/ProductDetailsCarousel";
+import ProductStickyBar from "@/components/ProductDetailsCarousel/ProductStickyBar";
+import LinkedOffers from "@/components/offers/LinkedOffers";
 import Wrapper from "@/components/Wrapper/Wrapper";
 import RelatedProducts from "@/components/RelatedProducts/RelatedProducts";
-import { useDispatch } from "react-redux";
-import { add } from "@/redux/features/cart/cartSlice";
 import ProductReview from "@/components/Account/ProductReview";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import useAuth from "@/auth/useAuth";
@@ -16,90 +14,44 @@ import { useRouter } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumb/Breadcrumbs";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { FiShield, FiTruck, FiRotateCcw } from "react-icons/fi";
-import ReviewSection from './../../../../components/Review/ReviewSection';
-import ReviewModal from './../../../../components/Review/ReviewModal';
-import { useCartStore } from './../../../../stores/cartStore';
-// import apiClient from "@/api/client";
-import apiClient from './../../../../api/client';
-
-
+import ReviewSection from "./../../../../components/Review/ReviewSection";
+import ReviewModal from "./../../../../components/Review/ReviewModal";
+import { useCartStore } from "./../../../../stores/cartStore";
+import apiClient from "./../../../../api/client";
 
 export default function ProductPage({ product, related }) {
+ 
   const router = useRouter();
-  const dispatch = useDispatch();
-    const { addToCart, cart: localCart, getTotalQuantity } = useCartStore();
+  const { addToCart, cart: localCart, getTotalQuantity } = useCartStore();
   const { user } = useAuth();
   const [open, setOpen] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [qty, setQty] = useState(1);
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [totalReviews, setTotalReviews] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [ratingCounts, setRatingCounts] = useState({
-    fiveStar: 0, fourStar: 0, threeStar: 0, twoStar: 0, oneStar: 0
-  });
 
   const productPrice = product.discount
     ? product.sell_price - (product.discount * product.sell_price) / 100
     : product.sell_price;
 
-     // Fetch Reviews
-  const fetchReviews = useCallback(async (page = 1) => {
-    try {
-      const response = await apiClient.get("/product/get-product-reviews-by-group-id", {
-        productId: product?._id,
-        pageNumber: page,
-        pageSize: 10,
-      });
-      setReviews(response.data.reviews || []);
-      setTotalReviews(response.data.totalReviews || 0);
-      setTotalPages(response.data.pageCount || 1);
-      setCurrentPage(page);
-      
-      // Set rating counts
-      if (response.data) {
-        setRatingCounts({
-          fiveStar: response.data.fiveStarCount || 0,
-          fourStar: response.data.fourStarCount || 0,
-          threeStar: response.data.threeStarCount || 0,
-          twoStar: response.data.twoStarCount || 0,
-          oneStar: response.data.oneStarCount || 0,
-        });
-        
-        // Calculate average rating
-        const totalStars = (response.data.fiveStarCount * 5) + (response.data.fourStarCount * 4) +
-          (response.data.threeStarCount * 3) + (response.data.twoStarCount * 2) + (response.data.oneStarCount * 1);
-        const totalCount = response.data.totalReviews || 0;
-        setAverageRating(totalCount > 0 ? totalStars / totalCount : 0);
-      }
-    } catch (error) {
-      console.error("Failed to fetch reviews:", error);
-      setReviews([]);
-    }
-  }, [product?._id]);
+  const reviews = product?.reviews || [];
+  const totalReviews = reviews.length;
 
-  // Initial fetch
-  React.useEffect(() => {
-    fetchReviews(1);
-  }, [fetchReviews]);
+  // Calculate average rating
+  const averageRating =
+    totalReviews > 0
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+      : 0;
 
-  // const handleQuantity = useCallback(
-  //   (type) => {
-  //     if (type === "dec" && quantity > 1) {
-  //       setQuantity(quantity - 1);
-  //     } else if (type === "inc") {
-  //       setQuantity(quantity + 1);
-  //     }
-  //   },
-  //   [quantity]
-  // );
+  // Calculate rating counts
+  const ratingCounts = {
+    fiveStar: reviews.filter((r) => r.rating === 5).length,
+    fourStar: reviews.filter((r) => r.rating === 4).length,
+    threeStar: reviews.filter((r) => r.rating === 3).length,
+    twoStar: reviews.filter((r) => r.rating === 2).length,
+    oneStar: reviews.filter((r) => r.rating === 1).length,
+  };
 
-
-    const increment = async () => {
+  const increment = async () => {
     const availableStock = product?.countInStock?.qty || 0;
     const currentTotalQuantity = await getCurrentCartTotal();
 
@@ -112,23 +64,22 @@ export default function ProductPage({ product, related }) {
     }
 
     // Check per-product limit
-    if (qty >= 4) {
+    if (quantity >= 4) {
       toast.error("You can add maximum 4 items of the same product at a time.");
       return;
     }
 
     // Check stock availability
-    if (qty < availableStock) {
-      setQty(qty + 1);
+    if (quantity < availableStock) {
+      setQuantity(quantity + 1);
     } else {
       toast.error(`Only ${availableStock} items available in stock`);
     }
   };
 
-  const decrement = () => qty > 1 && setQty(qty - 1);
+  const decrement = () => quantity > 1 && setQuantity(quantity - 1);
 
-
-    // Get current total quantity in cart (for logged-in users)
+  // Get current total quantity in cart (for logged-in users)
   const getCurrentCartTotal = async () => {
     if (user) {
       try {
@@ -154,48 +105,36 @@ export default function ProductPage({ product, related }) {
     }
   };
 
-   const addProductToCart = async (product) => {
-
+  const addProductToCart = async (product) => {
     // Check individual product limit
-    if (qty > 4) {
+    if (quantity > 4) {
       toast.error("You can add maximum 4 items of the same product at a time.");
       return;
     }
 
     // Get current total quantity in cart
     const currentTotalQuantity = await getCurrentCartTotal();
-    const newTotalQuantity = currentTotalQuantity + qty;
+    const newTotalQuantity = currentTotalQuantity + quantity;
 
     // GLOBAL CART LIMIT CHECK (max 4 total items)
     if (newTotalQuantity > 4) {
       toast.error(
-        `Maximum 4 items allowed per order. You already have ${currentTotalQuantity} item(s) in cart. Cannot add ${qty} more.`,
+        `Maximum 4 items allowed per order. You already have ${currentTotalQuantity} item(s) in cart. Cannot add ${quantity} more.`,
       );
       return;
     }
 
     try {
       if (user) {
-
-        console.log("payload",  {
-          userId: user?.id,
-          item: {
-            product: product?._id,
-            qty: qty,
-          },
-          type: "increment",
-        } )
-     
         // User is logged in - add to backend
         const response = await apiClient.post("/cart/add", {
           userId: user?.id,
           item: {
             product: product?._id,
-            qty: qty,
+            qty: quantity,
           },
           type: "increment",
         });
-        console.log("user ad res", response)
 
         if (response.ok) {
           toast.success(response.data.message || "Item added to cart!");
@@ -206,7 +145,7 @@ export default function ProductPage({ product, related }) {
         }
       } else {
         // User is not logged in - add to Zustand
-        addToCart(product, qty);
+        addToCart(product, quantity);
         toast.success("Item added to cart!");
         window.dispatchEvent(new CustomEvent("cartUpdated"));
         window.openCartSidebar();
@@ -217,19 +156,33 @@ export default function ProductPage({ product, related }) {
     }
   };
 
-  //   const notify = useCallback(() => {
-  //   dispatch(add({ product, quantity }));
-  //   // toast.success("Success. Check your cart!");
-  //    window.openCartSidebar();
-  // }, [product, quantity]);
-
-  const buyNow = useCallback(() => {
+  const buyNow = useCallback(async () => {
     if (!user) {
       toast.error("Please login to continue");
       return;
     }
-    dispatch(add({ product, quantity }));
-    router.push("/checkout");
+
+    try {
+      // First, add the product to cart
+      const response = await apiClient.post("/cart/add", {
+        userId: user?.id,
+        item: {
+          product: product?._id,
+          qty: quantity, // Use the current quantity state
+        },
+        type: "increment",
+      });
+
+      if (response.ok) {
+        // Navigate to checkout after successful add
+        router.push("/checkout");
+      } else {
+        toast.error("Failed to add item to cart");
+      }
+    } catch (error) {
+      console.error("Error in buy now:", error);
+      toast.error("Something went wrong");
+    }
   }, [user, product, quantity, router]);
 
   const handleShare = async () => {
@@ -245,38 +198,25 @@ export default function ProductPage({ product, related }) {
     });
   };
 
-
-    const handleCreateReview = async (formData) => {
+  const handleCreateReview = async (formData) => {
     if (!user) {
       toast.error("Please login to write a review");
       return;
     }
 
-    console.log("payload of review",  {
+    try {
+      const response = await apiClient.post("/product/create-product-review", {
         ...formData,
         productId: product._id,
         userId: user.id,
-      } )
+      });
 
-    try {
-      // const response = await apiClient.post("/product/create-product-review", {
-      //   ...formData,
-      //   productId: product._id,
-      //   userId: user.id,
-      // });
-
-      // console.log("response of review", response )
-
-      // if (response.ok) {
-      //   toast.success(response.data.message || "Review added successfully");
-      //   setIsReviewModalOpen(false);
-      //   // Refresh reviews after a short delay
-      //   setTimeout(() => {
-      //     fetchReviews(1);
-      //   }, 800);
-      // } else {
-      //   toast.error(response.data.message || "Failed to add review");
-      // }
+      if (response.ok) {
+        toast.success(response.data.message || "Review added successfully");
+        setIsReviewModalOpen(false);
+      } else {
+        toast.error(response.data.message || "Failed to add review");
+      }
     } catch (error) {
       console.error("Error creating review:", error);
       toast.error("Something went wrong");
@@ -295,58 +235,62 @@ export default function ProductPage({ product, related }) {
   return (
     <section className="bg-[#faf6ed]  min-h-screen">
       <Wrapper>
+        <div className="hidden md:flex">
+          <Breadcrumbs product={product} />
+        </div>
 
-        <Breadcrumbs product={product} />
-
-        <div className="flex flex-col px-4  lg:px-10 lg:flex-row gap-10 mt-6">
-
-          <div className="w-full lg:w-[50%]">
-              <ProductDetailsCarousel images={product?.image} />
-        
+        <div className="flex flex-col px-4  lg:px-10 lg:flex-row gap-10 ">
+          <div className="w-full lg:w-[50%] lg:self-start lg:sticky top-10">
+            <ProductDetailsCarousel images={product?.image} />
           </div>
 
           <div className="w-full lg:w-[50%] space-y-4">
-
             <div className="flex justify-between items-center">
               <div className="flex gap-3 items-center">
+                <div className="inline-flex items-center gap-3 px-3 py-2 border border-[#EDE5D3] rounded-full  bg-[#F5EFE0] shadow-sm">
+                  <div className="w-8 h-8  rounded-full bg-[#1f3b57] text-white flex items-center justify-center text-xs overflow-hidden">
+                    {product?.artisanInfo?.artisan?.image ? (
+                      <img
+                        src={product?.artisanInfo?.artisan?.image}
+                        alt={
+                          product?.artisanInfo?.artisan?.fullName || "artisan"
+                        }
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="font-medium">
+                        {product?.artisanInfo?.artisan?.fullName
+                          ?.charAt(0)
+                          ?.toUpperCase() || "A"}
+                      </span>
+                    )}
+                  </div>
 
-                
-             
-              <div className="inline-flex items-center gap-3 px-3 py-2 border border-[#EDE5D3] rounded-full  bg-[#F5EFE0] shadow-sm">
-  
-  <div className="w-8 h-8  rounded-full bg-[#1f3b57] text-white flex items-center justify-center text-xs overflow-hidden">
-    {product?.artisanInfo?.artisan?.image ? (
-      <img
-        src={product?.artisanInfo?.artisan?.image}
-        alt={product?.artisanInfo?.artisan?.fullName || "artisan"}
-        className="w-full h-full object-cover"
-      />
-    ) : (
-      <span className="font-medium">
-        {product?.artisanInfo?.artisan?.name?.charAt(0)?.toUpperCase() || "A"}
-      </span>
-    )}
-  </div>
-
-  <div className="leading-tight">
-    <p className="text-sm font-medium text-gray-900">
-      {product?.artisanInfo?.artisan?.name || "Artisan"}
-    </p>
-    <p className="text-xs text-gray-500">
-      India
-    </p>
-  </div>
+                <div className="leading-tight">
+  <p className="text-sm font-medium text-gray-900">
+    {product?.artisanInfo?.artisan?.fullName || 
+     product?.artisanInfo?.artisan?.name || 
+     "Artisan"}
+  </p>
+  <p className="text-xs text-gray-500">
+    {[
+      product?.artisanInfo?.artisan?.location?.address,
+      product?.artisanInfo?.artisan?.location?.city,
+      product?.artisanInfo?.artisan?.location?.state,
+    ]
+      .filter(Boolean)
+      .join(", ") || "India"}
+  </p>
 </div>
+                </div>
               </div>
 
               <button onClick={handleShare}>
-                <Image src="/share.png" width={20} height={20} alt="share" />
+                <Image src="/share.png" width={30} height={30} alt="share" />
               </button>
             </div>
 
-            <h1 className="text-3xl font-semibold">
-              {product?.name}
-            </h1>
+            <h1 className="text-3xl font-semibold">{product?.name}</h1>
 
             <ProductReview
               initialRating={product?.rating || 4.9}
@@ -361,152 +305,126 @@ export default function ProductPage({ product, related }) {
               <span className="line-through text-gray-400 text-sm">
                 ₹{product?.sell_price}
               </span>
-
-              <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                Save 22%
-              </span>
             </div>
 
-
             <div
-  className="text-gray-600 text-sm leading-relaxed space-y-2"
-  dangerouslySetInnerHTML={{ __html: product?.description }}
-/>
+              className="text-gray-600 text-sm leading-relaxed space-y-2"
+              dangerouslySetInnerHTML={{ __html: product?.description }}
+            />
 
-         
+            <div id="action-buttons" className="space-y-4">
+              <div className="flex items-center gap-6">
+                <span className="text-sm text-gray-700 font-medium">Qty</span>
 
-            <div className="flex items-center gap-6">
+                <div className="flex items-center bg-[#f3efe7] rounded-md overflow-hidden border border-[#e5e0d6] h-[36px]">
+                  <button
+                    onClick={decrement}
+                    className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
+                  >
+                    <FiMinus size={14} />
+                  </button>
 
+                  <span className="px-5 h-full flex items-center text-gray-800 text-sm font-medium border-x border-[#e5e0d6]">
+                    {quantity}
+                  </span>
 
-  <span className="text-sm text-gray-700 font-medium">Qty</span>
+                  <button
+                    onClick={increment}
+                    className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
+                  >
+                    <FiPlus size={14} />
+                  </button>
+                </div>
+              </div>
 
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <button
+                  onClick={() => addProductToCart(product)}
+                  className="bg-[#E0B94B] w-full py-3 rounded-lg font-medium text-sm"
+                >
+                  Add to cart
+                </button>
 
-<div className="flex items-center bg-[#f3efe7] rounded-md overflow-hidden border border-[#e5e0d6] h-[36px]">
+                <button
+                  onClick={buyNow}
+                  className="bg-[#1f3b57] text-white w-full py-3 rounded-lg font-medium text-sm"
+                >
+                  Buy now
+                </button>
+              </div>
+            </div>
 
-  <button
-    onClick={decrement}
-    className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
-  >
-    <FiMinus size={14} />
-  </button>
-
-  <span className="px-5 h-full flex items-center text-gray-800 text-sm font-medium border-x border-[#e5e0d6]">
-    {quantity}
-  </span>
-
-  <button
-    onClick={increment}
-    className="px-4 h-full flex items-center justify-center bg-[#e9e3d6]"
-  >
-    <FiPlus size={14} />
-  </button>
-
-</div>
-  
-  <span className="text-green-600 text-sm flex items-center gap-2">
-    <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-    In stock — ships in 3–5 days
-  </span>
-
-</div>
-
-       <div className="flex flex-col sm:flex-row gap-3 mt-4">
-  <button
-    onClick={ () => addProductToCart(product)}
-    className="bg-[#E0B94B] w-full py-3 rounded-lg font-medium text-sm"
-  >
-    Add to cart
-  </button>
-
-  <button
-    onClick={buyNow}
-    className="bg-[#1f3b57] text-white w-full py-3 rounded-lg font-medium text-sm"
-  >
-    Buy now
-  </button>
-</div>
-
+            <LinkedOffers
+             parentProductId={product?._id}
+             parentProduct={product}/>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+              <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
+                <FiShield className="text-[#1f3b57]" size={20} />
+                <div className="text-xs">
+                  <p className="font-medium text-gray-800">Authentic</p>
+                  <p className="text-gray-500">GI-tagged product</p>
+                </div>
+              </div>
 
-        <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
-          <FiShield className="text-[#1f3b57]" size={20} />
-          <div className="text-xs">
-            <p className="font-medium text-gray-800">Authentic</p>
-            <p className="text-gray-500">GI-tagged product</p>
-          </div>
-        </div>
+              <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
+                <FiTruck className="text-[#1f3b57]" size={20} />
+                <div className="text-xs">
+                  <p className="font-medium text-gray-800">Free shipping</p>
+                  <p className="text-gray-500">Orders over ₹1,999</p>
+                </div>
+              </div>
 
-        <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
-          <FiTruck className="text-[#1f3b57]" size={20} />
-          <div className="text-xs">
-            <p className="font-medium text-gray-800">Free shipping</p>
-            <p className="text-gray-500">Orders over ₹1,999</p>
-          </div>
-        </div>
+              <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
+                <FiRotateCcw className="text-[#1f3b57]" size={20} />
+                <div className="text-xs">
+                  <p className="font-medium text-gray-800">Easy returns</p>
+                  <p className="text-gray-500">15-day return policy</p>
+                </div>
+              </div>
+            </div>
 
-        <div className="flex items-center gap-3 bg-[#f5efe0] border border-[#e6decf] rounded-lg p-4">
-          <FiRotateCcw className="text-[#1f3b57]" size={20} />
-          <div className="text-xs">
-            <p className="font-medium text-gray-800">Easy returns</p>
-            <p className="text-gray-500">15-day return policy</p>
-          </div>
-        </div>
+            <div className="border-b border-[#e6decf] my-6"></div>
 
-      </div>
+            <button
+              onClick={() => setOpen(!open)}
+              className="w-full flex justify-between items-center text-left"
+            >
+              <h3 className="font-semibold text-gray-800">Product Details</h3>
 
-   
-      <div className="border-b border-[#e6decf] my-6"></div>
+              {open ? (
+                <FiChevronUp className="text-gray-600" />
+              ) : (
+                <FiChevronDown className="text-gray-600" />
+              )}
+            </button>
 
-          <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center text-left"
-      >
-        <h3 className="font-semibold text-gray-800">
-          Product details
-        </h3>
-
-        {open ? (
-          <FiChevronUp className="text-gray-600" />
-        ) : (
-          <FiChevronDown className="text-gray-600" />
-        )}
-      </button>
-
-  
-      {open && (
-        <div
-          className="mt-4 text-sm text-gray-600 leading-relaxed
+            {open && (
+              <div
+                className="mt-4 text-sm text-gray-600 leading-relaxed
                      [&_p]:mb-2
                      [&_strong]:font-semibold
                      [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1"
-          dangerouslySetInnerHTML={{
-            __html: product?.specification || product?.details || "",
-          }}
-        />
-      )}
-
+                dangerouslySetInnerHTML={{
+                  __html: product?.specification || product?.details || "",
+                }}
+              />
+            )}
           </div>
         </div>
 
-        {/* <ReviewSection product={product}/> */}
-
-           <ReviewSection
+        <ReviewSection
           reviews={reviews}
           totalReviews={totalReviews}
           averageRating={averageRating}
           ratingCounts={ratingCounts}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => fetchReviews(page)}
           onWriteReview={openReviewModal}
           user={user}
         />
-
       </Wrapper>
       <RelatedProducts products={related.products} />
 
-       <ReviewModal
+      <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         productId={product._id}
@@ -514,7 +432,12 @@ export default function ProductPage({ product, related }) {
         onReviewSubmit={handleCreateReview}
         user={user}
       />
-  
+
+      <ProductStickyBar
+        product={product}
+        onAddToCart={() => addProductToCart(product)}
+        onBuyNow={buyNow}
+      />
     </section>
   );
 }
