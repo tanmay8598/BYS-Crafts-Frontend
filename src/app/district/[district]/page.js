@@ -8,7 +8,8 @@ import apiClient from "@/api/client";
 import Loader from "@/components/loader/Loader";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import NewProducts from "@/components/BestSellers/NewProducts";
-import BestSellerCard2 from "./../../../components/BestSellers/BestSellerCard2";
+import BestSellingCraftCard from './../../../components/BestSellers/BestSellingCraftCard';
+
 
 const Page = () => {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
@@ -134,7 +135,7 @@ const Page = () => {
                 </p>
               ) : (
                 products.map((product) => (
-                  <BestSellerCard2 key={product.id} product={product} />
+                  <BestSellingCraftCard key={product.id} product={product} />
                 ))
               )}
             </div>

@@ -12,8 +12,6 @@ const Page = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("first", apiClient)
-
   const CategoryCard = ({ category, index }) => {
   const { name, image } = category;
   const colors = [

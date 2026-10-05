@@ -130,23 +130,6 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="py-16 px-6 text-center">
-        <h2 className="text-3xl font-bold mb-4">
-          Start Your Creative Journey
-        </h2>
-        <p className="text-[#7A8A9C] mb-8">
-          Explore handcrafted collections and build something meaningful today.
-        </p>
-
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-[#1B3A5C] text-white px-6 py-3 rounded-lg hover:opacity-90 transition">
-            Explore Collections
-          </button>
-          <button className="border border-[#1B3A5C] text-[#1B3A5C] px-6 py-3 rounded-lg hover:bg-[#1B3A5C] hover:text-white transition">
-            Learn More
-          </button>
-        </div>
-      </div>
 
     </div>
   );

@@ -8,7 +8,6 @@ import apiClient from "@/api/client";
 import Loader from "@/components/loader/Loader";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import NewProducts from "@/components/BestSellers/NewProducts";
-import BestSellerCard2 from "./../../../components/BestSellers/BestSellerCard2";
 import BestSellingCraftCard from './../../../components/BestSellers/BestSellingCraftCard';
 
 const Page = () => {

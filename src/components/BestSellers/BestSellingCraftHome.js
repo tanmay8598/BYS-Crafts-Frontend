@@ -5,6 +5,7 @@ import Link from "next/link";
 import BestSellingCraftCard from "./BestSellingCraftCard";
 
 function BestSellingCraftHome({ products }) {
+
   return (
     <section className="py-5 bg-[#F5EFE0]">
       <div className="max-w-6xl mx-auto px-4">

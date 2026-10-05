@@ -10,7 +10,6 @@ import { useCartStore } from "./../../stores/cartStore";
 const BestSellingCraftCard = ({ product }) => {
   const { user } = useAuth();
   const { addToCart, getTotalQuantity } = useCartStore();
-
   const { name, image, sell_price, discount, rating, artisanInfo } = product;
 
   const finalPrice = sell_price - (sell_price * discount) / 100;
@@ -156,7 +155,7 @@ const BestSellingCraftCard = ({ product }) => {
         <div className="p-4 flex flex-col flex-1">
           <div className="space-y-2 min-h-[110px]">
             <p className="text-xs text-text-yellowText">
-              By {artisanInfo?.artisan?.name || "Artisan"}
+              By {artisanInfo?.artisan?.fullName || "Artisan"}
             </p>
 
             <h3 className="text-sm font-medium text-text-primaryText line-clamp-2 min-h-[40px]">
