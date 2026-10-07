@@ -47,7 +47,7 @@ const Page = () => {
     <div className="w-full bg-[#FAF6ED] min-h-screen px-4 md:px-10 py-6">
       <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row gap-6">
 
-        <div className="w-full md:w-[260px] bg-[#FAF6ED] rounded-2xl p-5 border border-[#1B3A5C0F]">
+        <div className="w-full md:w-[260px] bg-[#FAF6ED] rounded-2xl p-5 border border-[#1B3A5C0F] md:sticky md:top-6 h-fit md:self-start">
 
           <div className="flex flex-col items-center border-b border-[#e6dfd5] pb-5">
             <div className="w-16 h-16 rounded-full bg-[#1f3b57] text-white flex items-center justify-center text-xl font-semibold">

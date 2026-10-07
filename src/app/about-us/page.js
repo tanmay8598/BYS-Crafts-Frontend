@@ -1,8 +1,39 @@
 
-
-"use client";
 import { ARTISANS, FEATURES } from "@/constants";
 import React from "react";
+
+export const metadata = {
+  title: "About BYS Crafts – Build Yourself | Handmade Marketplace",
+  description:
+    "BYS Crafts (Build Yourself) connects modern creators with timeless craftsmanship. Discover handmade products, artisan stories, and sustainable living.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About BYS Crafts – Build Yourself",
+    description:
+      "Where creativity meets craftsmanship. Discover handmade stories, curated for modern living.",
+    type: "website",
+    url: "/about",
+    siteName: "BYS Crafts",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+        width: 1200,
+        height: 630,
+        alt: "BYS Crafts – handmade artisan marketplace",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About BYS Crafts – Build Yourself",
+    description:
+      "Where creativity meets craftsmanship. Discover handmade stories, curated for modern living.",
+    images: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    ],
+  },
+};
+
 
 const Page = () => {
   return (

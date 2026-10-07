@@ -39,15 +39,15 @@ function Hero() {
 
           <div className="flex justify-center  lg:justify-start gap-8 mt-8 text-sm ">
             <div>
-              <p className="text-3xl font-semibold font-primary  text-[#1E1E1E]">500+</p>
+              <p className="text-3xl font-semibold font-playfair   text-[#1E1E1E]">500+</p>
               <p className="text-text-secondaryText text-xs">Artisan partners</p>
             </div>
             <div>
-              <p className="text-3xl font-semibold font-primary  text-[#1E1E1E]">28</p>
+              <p className="text-3xl font-semibold font-playfair   text-[#1E1E1E]">28</p>
               <p className="text-text-secondaryText text-xs">States represented</p>
             </div>
             <div>
-              <p className="text-3xl font-semibold font-primary  text-[#1E1E1E]">4.9</p>
+              <p className="text-3xl font-semibold font-playfair   text-[#1E1E1E]">4.9</p>
               <p className="text-text-secondaryText text-xs">Customer rating</p>
             </div>
           </div>

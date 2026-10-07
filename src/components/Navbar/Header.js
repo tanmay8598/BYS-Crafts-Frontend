@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 import { Search, Heart, User, Menu, X, ShoppingCart, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiShare2, FiUsers, FiMapPin } from "react-icons/fi";
@@ -14,7 +14,7 @@ import { useCartCount } from "@/hooks/useCartCount";
 import apiClient from "@/api/client";
 import AccountSidebar from "../Cart/AccountSidebar";
 import SearchSidebar from "../Search/SearchSidebar";
-import CartSidebar from './../Cart/cartSidebar';
+import CartSidebar from './../Cart/CartSidebar';
 
 export const Header = ({ setCartOpen }) => {
   const [isMobileMenu, setIsMobileMenu] = useState(false);
@@ -68,23 +68,36 @@ useEffect(() => {
     <>
     <div className="sticky top-0 z-50">
 
-        {bannerMessage && (
+        
       <div className="bg-bg-darkBlue text-white text-xs text-center font-secondary  py-1 tracking-wide">
-        {bannerMessage}
+        {bannerMessage || "Pay online and save 5% — plus free delivery on orders above ₹500."}
       </div>
-    )}
+   
 
       <nav className="bg-bg-light border-b-2 border-[#1B3A5C14]">
         <div className="w-full px-6 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <Link href="/" className="flex items-center">
-                <img src="/BYDLogo.webp" className="h-10" />
-              </Link>
+             <Link href="/" className="inline-flex items-center">
+  <Image
+    src="/BYDLogo.webp"
+    alt="BYS Crafts"
+    width={140}
+    height={40}
+    className="h-10 w-auto object-contain"
+    priority
+  />
+</Link>
             </div>
 
             <div className="hidden lg:flex flex-1 justify-center">
               <div className="flex items-center gap-10 text-[14px] font-medium font-secondary  text-[#3A4A5C] whitespace-nowrap">
+                <Link
+                  href="/"
+                  className="hover:opacity-70 transition"
+                >
+                  Home
+                </Link>
                 <Link
                   href="/collections"
                   className="hover:opacity-70 transition"

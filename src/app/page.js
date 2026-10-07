@@ -105,10 +105,6 @@ async function DistrictsSection() {
   return <BrowseByDistricts districts={districts} />;
 }
 
-// async function BlogSection() {
-//   const blogs = await getBlogs();
-//   return <BlogHero blogs={blogs} />;
-// }
 
 // ----- MAIN PAGE -----
 export default function Home() {

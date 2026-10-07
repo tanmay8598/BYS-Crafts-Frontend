@@ -134,6 +134,10 @@
     @apply font-bold;
   }
 
+  .font-playfair {
+    font-family: var(--font-playfair), "Playfair Display", serif;
+  }
+
   h1 {
     @apply text-5xl md:text-[80px] leading-none;
   }
@@ -282,6 +286,8 @@
     }
   }
 }
+
+
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {

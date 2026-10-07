@@ -1,16 +1,36 @@
-"use client";
-
 import React from "react";
-import { 
-  FiShield, 
-  FiUser, 
-  FiLock, 
-  FiMail, 
-  FiShare2, 
+import {
+  FiShield,
+  FiUser,
+  FiLock,
+  FiMail,
+  FiShare2,
   FiDatabase,
-  FiCheckCircle 
+  FiCheckCircle,
 } from "react-icons/fi";
 import { FaShieldAlt, FaUserShield } from "react-icons/fa";
+
+export const metadata = {
+  title: "Privacy Policy – BYS Crafts | How We Protect Your Data",
+  description:
+    "Read the BYS Crafts Privacy Policy. Learn how we collect, use, and safeguard your personal information when you shop handmade crafts online.",
+  alternates: { canonical: "/privacy-policy" },
+  openGraph: {
+    title: "Privacy Policy – BYS Crafts",
+    description:
+      "Learn how BYS Crafts collects, uses, and safeguards your personal information.",
+    url: "/privacy-policy",
+    type: "website",
+    siteName: "BYS Crafts",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy – BYS Crafts",
+    description:
+      "Learn how BYS Crafts collects, uses, and safeguards your personal information.",
+  },
+  robots: { index: true, follow: true },
+};
 
 const PrivacyPolicy = () => {
   const sections = [
@@ -66,7 +86,8 @@ const PrivacyPolicy = () => {
             Privacy Policy
           </h1>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
-            Your privacy matters to us. Learn how we collect, use, and safeguard your personal information.
+            Your privacy matters to us. Learn how we collect, use, and
+            safeguard your personal information.
           </p>
         </div>
 
@@ -78,9 +99,10 @@ const PrivacyPolicy = () => {
               <FaUserShield className="text-xl text-[#1f3b57] mt-0.5" />
               <div>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  At <strong className="text-[#1f3b57]">BYS Crafts</strong>, we respect your privacy and are 
-                  committed to protecting your personal information. This policy 
-                  explains how we collect, use, and safeguard your data.
+                  At <strong className="text-[#1f3b57]">BYS Crafts</strong>, we
+                  respect your privacy and are committed to protecting your
+                  personal information. This policy explains how we collect,
+                  use, and safeguard your data.
                 </p>
               </div>
             </div>
@@ -89,7 +111,10 @@ const PrivacyPolicy = () => {
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => (
-              <div key={index} className="border-b border-[#e6dfd2] pb-6 last:border-0 last:pb-0">
+              <div
+                key={index}
+                className="border-b border-[#e6dfd2] pb-6 last:border-0 last:pb-0"
+              >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-full bg-[#f5efe0] flex items-center justify-center">
                     {section.icon}
@@ -100,7 +125,10 @@ const PrivacyPolicy = () => {
                 </div>
                 <ul className="space-y-2 pl-11">
                   {section.items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-gray-600 text-sm">
+                    <li
+                      key={idx}
+                      className="flex items-start gap-3 text-gray-600 text-sm"
+                    >
                       <span className="w-1.5 h-1.5 rounded-full bg-[#E0B94B] mt-2 shrink-0" />
                       {item}
                     </li>
@@ -123,7 +151,8 @@ const PrivacyPolicy = () => {
             <ul className="space-y-2 pl-11">
               <li className="flex items-start gap-3 text-gray-600 text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E0B94B] mt-2 shrink-0" />
-                You can request to access, update, or delete your personal data at any time.
+                You can request to access, update, or delete your personal data
+                at any time.
               </li>
               <li className="flex items-start gap-3 text-gray-600 text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E0B94B] mt-2 shrink-0" />
@@ -132,7 +161,10 @@ const PrivacyPolicy = () => {
               <li className="flex items-start gap-3 text-gray-600 text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E0B94B] mt-2 shrink-0" />
                 To exercise your rights, contact us at{" "}
-                <a href="mailto:support@byscrafts.com" className="text-[#1f3b57] font-medium hover:text-[#E0B94B] transition">
+                <a
+                  href="mailto:support@byscrafts.com"
+                  className="text-[#1f3b57] font-medium hover:text-[#E0B94B] transition"
+                >
                   support@byscrafts.com
                 </a>
               </li>
@@ -150,8 +182,9 @@ const PrivacyPolicy = () => {
               </h2>
             </div>
             <p className="text-gray-600 text-sm pl-11">
-              We use cookies to enhance your browsing experience and analyze website traffic. 
-              You can control cookie preferences through your browser settings.
+              We use cookies to enhance your browsing experience and analyze
+              website traffic. You can control cookie preferences through your
+              browser settings.
             </p>
           </div>
         </div>
@@ -159,11 +192,21 @@ const PrivacyPolicy = () => {
         {/* Footer Note */}
         <div className="mt-6 text-center">
           <p className="text-gray-500 text-xs">
-            Last updated: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}
+            Last updated:{" "}
+            {new Date().toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })}
           </p>
           <p className="text-gray-400 text-xs mt-1">
             For any privacy-related concerns, contact us at{" "}
-            <a target="_blank" href="mailto:support@byscrafts.com" className="text-[#1f3b57] hover:text-[#E0B94B] transition">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="mailto:support@byscrafts.com"
+              className="text-[#1f3b57] hover:text-[#E0B94B] transition"
+            >
               support@byscrafts.com
             </a>
           </p>

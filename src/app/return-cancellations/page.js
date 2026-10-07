@@ -1,8 +1,28 @@
-"use client";
 
 import React from "react";
 import { FiPackage, FiXCircle, FiShield, FiRefreshCw, FiClock, FiCamera, FiCheckCircle } from "react-icons/fi";
 import { FaHandshake, FaTruck } from "react-icons/fa";
+export const metadata = {
+  title: "Returns, Cancellations & Refunds – BYS Crafts",
+  description:
+    "Understand BYS Crafts' returns, cancellations, and refund policy. Learn the conditions for returns, cancellations, damaged items, and refund timelines.",
+  alternates: { canonical: "/return-cancellation" },
+  openGraph: {
+    title: "Returns, Cancellations & Refunds – BYS Crafts",
+    description:
+      "Understand BYS Crafts' returns, cancellations, and refund policy for handmade products.",
+    url: "/return-cancellation",
+    type: "website",
+    siteName: "BYS Crafts",
+  },
+  twitter: {
+    card: "summary",
+    title: "Returns, Cancellations & Refunds – BYS Crafts",
+    description:
+      "Understand BYS Crafts' returns, cancellations, and refund policy for handmade products.",
+  },
+  robots: { index: true, follow: true },
+};
 
 const ReturnCancellationPage = () => {
   const policies = [

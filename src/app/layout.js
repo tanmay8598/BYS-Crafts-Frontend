@@ -1,10 +1,10 @@
-// import './bones/registry';
+
 import "./globals.css";
 import { Providers } from "@/redux/provider";
 import ClientOnly from "@/components/ClientOnly";
-import { Toaster } from "react-hot-toast"; // ✅ Import Toaster
+import { Toaster } from "react-hot-toast"; 
 import Script from "next/script";
-import { Newsreader, Noto_Sans } from "next/font/google";
+import { Newsreader, Noto_Sans , Playfair_Display } from "next/font/google";
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -14,6 +14,12 @@ const newsreader = Newsreader({
 const noto = Noto_Sans({
   subsets: ["latin"],
   variable: "--font-noto",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata = {
@@ -50,7 +56,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`font-archivo ${newsreader.variable} ${noto.variable}`}>
+      <body className={`font-archivo ${newsreader.variable} ${noto.variable}  ${playfair.variable}`}>
         {/* Google Analytics Script */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-D2TNV16HGC"

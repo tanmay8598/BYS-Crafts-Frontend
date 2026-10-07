@@ -1,8 +1,30 @@
-"use client";
+
 
 import React from "react";
 import { FiShield, FiShoppingBag, FiTruck, FiRefreshCcw, FiAlertCircle, FiBookOpen } from "react-icons/fi";
 import { FaGavel, FaHandshake } from "react-icons/fa";
+
+export const metadata = {
+  title: "Terms & Conditions – BYS Crafts | Handmade Products Policy",
+  description:
+    "Read BYS Crafts' Terms & Conditions covering products, orders, payments, shipping, returns, liability, and governing law for handmade craft purchases.",
+  alternates: { canonical: "/terms-and-conditions" },
+  openGraph: {
+    title: "Terms & Conditions – BYS Crafts",
+    description:
+      "Read BYS Crafts' Terms & Conditions covering products, orders, payments, shipping, returns, and liability.",
+    url: "/terms-and-conditions",
+    type: "website",
+    siteName: "BYS Crafts",
+  },
+  twitter: {
+    card: "summary",
+    title: "Terms & Conditions – BYS Crafts",
+    description:
+      "Read BYS Crafts' Terms & Conditions covering products, orders, payments, shipping, returns, and liability.",
+  },
+  robots: { index: true, follow: true },
+};
 
 const TermsAndConditions = () => {
   const sections = [
