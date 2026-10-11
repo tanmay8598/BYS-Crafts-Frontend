@@ -13,6 +13,7 @@ import {
 import useAuth from "@/auth/useAuth";
 import ReviewModal from "../ReviewModal";
 import { Info, ListChecks, BookOpen } from "lucide-react";
+import { sanitizeHtml } from '@/utils/sanitize';
 
 const ProductDetailSections = ({ product, artisan }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,7 +76,7 @@ const ProductDetailSections = ({ product, artisan }) => {
                 <div
                   key={idx}
                   className="bg-white/50 rounded-2xl p-6 shadow-cultural prose max-w-none leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: cleanHTML(html) }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
                 />
               ))}
             </div>

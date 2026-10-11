@@ -13,7 +13,6 @@ export default function WishlistAccountSection() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  console.log("user", user)
 
   useEffect(() => {
     if (!user?.id) {

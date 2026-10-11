@@ -26,6 +26,9 @@ export const metadata = {
   title: "Build Yourself – Authentic Handicrafts | Handmade Home Decor & Gifts",
   description:
     "Discover authentic handicrafts crafted by local artisans — premium handmade decor, wooden crafts, metal art, terracotta, textiles, and more. Shop unique, eco-friendly, and culturally rich products with nationwide delivery.",
+      alternates: {
+    canonical: "/", 
+  },
   keywords: [
     "buy handicrafts online",
     "handmade home decor",

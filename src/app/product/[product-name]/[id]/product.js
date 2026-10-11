@@ -18,6 +18,7 @@ import ReviewSection from "./../../../../components/Review/ReviewSection";
 import ReviewModal from "./../../../../components/Review/ReviewModal";
 import { useCartStore } from "./../../../../stores/cartStore";
 import apiClient from "./../../../../api/client";
+import { sanitizeHtml } from "@/utils/sanitize";
 
 export default function ProductPage({ product, related }) {
  
@@ -87,7 +88,6 @@ export default function ProductPage({ product, related }) {
           userId: user?.id,
         });
 
-        // console.log("count of cart", response)
         let totalQty = 0;
         if (response.data && Array.isArray(response.data?.cart)) {
           totalQty = response.data.cart.reduce(
@@ -309,7 +309,7 @@ export default function ProductPage({ product, related }) {
 
             <div
               className="text-gray-600 text-sm leading-relaxed space-y-2"
-              dangerouslySetInnerHTML={{ __html: product?.description }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(product?.description) }}
             />
 
             <div id="action-buttons" className="space-y-4">
@@ -406,7 +406,7 @@ export default function ProductPage({ product, related }) {
                      [&_strong]:font-semibold
                      [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1"
                 dangerouslySetInnerHTML={{
-                  __html: product?.specification || product?.details || "",
+               __html: sanitizeHtml(product?.specification || product?.details || ""),
                 }}
               />
             )}

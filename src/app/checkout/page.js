@@ -148,19 +148,12 @@ export default function CheckoutPage() {
   ]);
 
   const handleRazorpayPayment = useCallback(async () => {
-
-    // console.log("hit")
-    // console.log("hit", {
-    //     total: finalTotal,
-    //     userId: user.id,
-    //   })
     try {
       const result = await apiClient.get("/orders/payment", {
         total: finalTotal,
         userId: user.id,
       });
 
-      // console.log("res", result)
       if (!result.ok) throw new Error("Failed to create payment order");
 
       const options = {

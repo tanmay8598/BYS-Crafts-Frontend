@@ -34,7 +34,6 @@ const Page = () => {
     }
   };
 
-  console.log(trackOrder);
 
   return (
     <>

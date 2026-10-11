@@ -21,7 +21,7 @@ const stripHeadingTags = (html = "") =>
 
 export default function BlogArticleServer({ blog }) {
   const readingTime = getReadingTime(blog.content);
-  console.log("blog", blog)
+
 
   return (
     <div className="bg-[#FAF6ED] min-h-screen font-serif">

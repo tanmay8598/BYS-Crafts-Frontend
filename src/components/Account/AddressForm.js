@@ -12,8 +12,6 @@ import SelectField from "./SelectField";
 const AddressForm = ({ isOpen, setIsOpen, existingAddress, refreshAddresses  }) => {
   const { user, logIn } = useAuth();
 
-  console.log(user)
-
   const isEditMode = !!existingAddress?._id;
 
   const [formData, setFormData] = useState({
@@ -129,11 +127,10 @@ const AddressForm = ({ isOpen, setIsOpen, existingAddress, refreshAddresses  }) 
             shippingAddress: formData,
           };
 
-          console.log("endpoint, payload", endpoint, payload)
+    
 
       const response = await apiClient.post(endpoint, payload);
 
-      console.log("res", response)
 
       if (response.status === 200) {
         if (!isEditMode && response.data.token) {

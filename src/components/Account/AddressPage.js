@@ -70,7 +70,7 @@ const AddressPage = () => {
         addressId,
       });
 
-      console.log("default res", res);
+    
 
       if (res.status === 200) {
         toast.success("Default address updated");

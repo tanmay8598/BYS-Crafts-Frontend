@@ -67,12 +67,10 @@ const OTPVerificationModal = ({
         [isEmailMode ? "email" : "phone"]: isEmailMode ? email : mobile,
         otp: otpValue,
       };
-      // console.log("payload of verify", payload )
 
       try {
         setVerifyLoading(true);
         const response = await apiClient.post(`/user/verify`, payload);
-        // console.log("repsonse of verify ", response )
 
         if (!response.ok) {
           toast.error(response?.data?.message || "Verification Failed");
@@ -112,12 +110,10 @@ const OTPVerificationModal = ({
     try {
       const url = `/user${isEmailMode ? "/resend-otp" : "/resend-mobile-otp"}`;
 
-      // console.log("url of verify resend", url)
 
       const response = await apiClient.post(url, {
         [isEmailMode ? "email" : "phone"]: isEmailMode ? email : mobile,
       });
-      // console.log("repsonse of verify resend", response )
 
       if (!response.ok) {
         throw new Error("Failed to resend OTP");

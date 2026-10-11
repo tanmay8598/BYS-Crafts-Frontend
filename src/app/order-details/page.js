@@ -35,12 +35,10 @@ const page = () => {
     }
   };
 
-  console.log(myOrder, "myOrder");
 
   const handleBackClick = () => {
     router.back();
   };
-  console.log(params, "params");
   return (
     <>
       <div className="shadow-lg m-8 rounded-md   pb-2  p-6 shadow-blue-gray-300 bg-white">
